@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		"C:/ChivGame/.vscode": true,
+		"C:/ChivGame/Content": true,
+		"C:/ChivGame/Intermediate": true
+	}
+}
