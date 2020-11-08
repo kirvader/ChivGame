@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "MainPaperCharacter.generated.h"
-class USpringArmComponent;
-class UCameraComponent;
 class UPaperFlipbookComponent;
 
 UCLASS()
@@ -20,10 +18,6 @@ private:
 	float MoveSpeedUpDown = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedLeftRight = 100.0f;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* SpringArm;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* Camera;
 
 	UPaperFlipbookComponent* HeroFlipBook;
 

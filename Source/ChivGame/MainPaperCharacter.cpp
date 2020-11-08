@@ -3,17 +3,11 @@
 
 #include "MainPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 
 
 AMainPaperCharacter::AMainPaperCharacter()
 {
-    SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-    SpringArm->SetupAttachment(RootComponent);
-
-    Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-    Camera->SetupAttachment(SpringArm);
+    
 }
 
 // Called when the game starts or when spawned
@@ -42,12 +36,12 @@ void AMainPaperCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInput
 
 void AMainPaperCharacter::CalculateMoveLeftRightInput(float Value) 
 {
-    MovePoint = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 0, MovePoint.Z);
+    MovePoint = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, MovePoint.Y, MovePoint.Z);
 }
 
 void AMainPaperCharacter::CalculateMoveUpDownInput(float Value) 
 {
-    MovePoint = FVector(MovePoint.X, 0, Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds);
+    MovePoint = FVector(MovePoint.X, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds, Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds);
 }
 
 void AMainPaperCharacter::Move() 
