@@ -6,6 +6,8 @@
 #include "PaperCharacter.h"
 #include "MainPaperCharacter.generated.h"
 class UPaperFlipbookComponent;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class CHIVGAME_API AMainPaperCharacter : public APaperCharacter
@@ -18,6 +20,12 @@ private:
 	float MoveSpeedUpDown = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedLeftRight = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float LeftestCameraPosition = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float RightestCameraPosition = 0.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* Camera;
 
 	UPaperFlipbookComponent* HeroFlipBook;
 

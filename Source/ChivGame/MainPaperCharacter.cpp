@@ -3,11 +3,15 @@
 
 #include "MainPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
+#include "Camera/CameraComponent.h"
 
 
 AMainPaperCharacter::AMainPaperCharacter()
 {
-    
+
+
+    Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+    Camera->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
