@@ -45,14 +45,34 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
 
+void AMainCharacterPawn::CameraMoveLeftRightInput() 
+{
+	FVector PlayerPawnLocation = Sprite->GetComponentLocation();
+	FVector CameraCurrentLocation = Camera->GetComponentLocation();
+	FVector TargetCameraLocation;
+	if (PlayerPawnLocation.X > CameraCurrentLocation.X) {
+		TargetCameraLocation = FVector(std::min(PlayerPawnLocation.X, RightestCameraPosition), CameraCurrentLocation.Y, CameraCurrentLocation.Z);
+	} else
+	{
+		TargetCameraLocation = FVector(std::max(PlayerPawnLocation.X, LeftestCameraPosition), CameraCurrentLocation.Y, CameraCurrentLocation.Z);
+	}
+	FVector CameraMoveDirection = (TargetCameraLocation - CameraCurrentLocation) * CameraLag;
+	Camera->AddWorldOffset(CameraMoveDirection);
+	
+	// UE_LOG(LogTemp, Warning, TEXT("Camera direction %f"), (PlayerPawnLocation.X - CameraCurrentLocation.X) * CameraLag);
+}
+
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
     FVector MovePoint = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 0, 0);
-	Sprite->AddLocalOffset(MovePoint, true);
+	Sprite->AddWorldOffset(MovePoint, true);
+	CameraMoveLeftRightInput();
 }
+
+
 
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
     FVector MovePoint = FVector(0, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds, Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds);
-    Sprite->AddLocalOffset(MovePoint, true);
+    Sprite->AddWorldOffset(MovePoint, true);
 }

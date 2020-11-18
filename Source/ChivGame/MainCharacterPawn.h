@@ -9,6 +9,7 @@
 class UPaperFlipbookComponent;
 class UCameraComponent;
 class UStaticMeshComponent;
+class USceneComponent;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -18,14 +19,17 @@ private:
 	// Камера
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent *Camera;
-	// Sprite
+	// Моделька персонажа
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbookComponent *Sprite;
-	// StaticMesh = RootComponent
+	// Корень, так как не нашел способа прикрепить все к рут компоненту
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* HeroStaticMesh;
+	// методы двигающие персонажа и камеру
 	void CalculateMoveLeftRightInput(float Value);
+	void CameraMoveLeftRightInput();
 	void CalculateMoveUpDownInput(float Value);
+	// Скорость персонажа по обеим осям
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedUpDown = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
@@ -40,6 +44,10 @@ private:
 	float LeftestCameraPosition = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float RightestCameraPosition = 0.0f;
+	// Для того чтобы камера не сразу ехала за игроком, а с небольшой задержкой
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float CameraLag = 0.6f;
+	
 
 	
 
