@@ -47,17 +47,19 @@ private:
 	// Для того чтобы камера не сразу ехала за игроком, а с небольшой задержкой
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float CameraLag = 0.6f;
-	
-
-	
-
 
 public:
 	// Sets default values for this pawn's properties
 	AMainCharacterPawn();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	// Функция, настраиваемая из блупринтов, для приостановки игры и последующего продолжения
+	/*
+	* UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Character")
+	* void PauseGame();
+	* UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Character")
+	* void UnpauseGame();
+	*/
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
