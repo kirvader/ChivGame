@@ -4,6 +4,7 @@
 #include "MainCharacterPawn.h"
 #include "Camera/CameraComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "PaperSprite.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values
@@ -14,9 +15,10 @@ AMainCharacterPawn::AMainCharacterPawn()
 
 	HeroStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComponent"));
 	RootComponent = HeroStaticMesh;
+	HeroStaticMesh->SetSimulatePhysics(true);
 
-	Sprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Sprite"));
-	Sprite->SetupAttachment(RootComponent);
+	HeroSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HeroSprite"));
+	HeroSprite->SetupAttachment(RootComponent);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
@@ -26,14 +28,18 @@ AMainCharacterPawn::AMainCharacterPawn()
 void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
+
 }
 
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	MoveHero();
+	CalculateCameraMoveLeftRightInput();
+	CalculateCameraZoomWhenPlayerIsNear();
+	MoveCamera();
 }
 
 // Called to bind functionality to input
@@ -45,9 +51,9 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
 
-void AMainCharacterPawn::CameraMoveLeftRightInput() 
+void AMainCharacterPawn::CalculateCameraMoveLeftRightInput() 
 {
-	FVector PlayerPawnLocation = Sprite->GetComponentLocation();
+	FVector PlayerPawnLocation = HeroSprite->GetComponentLocation();
 	FVector CameraCurrentLocation = Camera->GetComponentLocation();
 	FVector TargetCameraLocation;
 	if (PlayerPawnLocation.X > CameraCurrentLocation.X) {
@@ -56,23 +62,38 @@ void AMainCharacterPawn::CameraMoveLeftRightInput()
 	{
 		TargetCameraLocation = FVector(std::max(PlayerPawnLocation.X, LeftestCameraPosition), CameraCurrentLocation.Y, CameraCurrentLocation.Z);
 	}
-	FVector CameraMoveDirection = (TargetCameraLocation - CameraCurrentLocation) * CameraLag;
-	Camera->AddWorldOffset(CameraMoveDirection);
+	CameraMovementDirection = FVector((TargetCameraLocation.X - CameraCurrentLocation.X) * CameraLag, CameraMovementDirection.Y, CameraMovementDirection.Z);
 	
-	// UE_LOG(LogTemp, Warning, TEXT("Camera direction %f"), (PlayerPawnLocation.X - CameraCurrentLocation.X) * CameraLag);
 }
 
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
-    FVector MovePoint = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 0, 0);
-	Sprite->AddWorldOffset(MovePoint, true);
-	CameraMoveLeftRightInput();
+    HeroMoveDirection = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, HeroMoveDirection.Y, HeroMoveDirection.Z);
+	
 }
-
-
-
+void AMainCharacterPawn::CalculateCameraZoomWhenPlayerIsNear() 
+{
+	FVector PlayerPawnLocation = HeroSprite->GetComponentLocation();
+	FVector CameraCurrentLocation = Camera->GetComponentLocation();
+	FVector TargetCameraLocation;
+	if (PlayerPawnLocation.Z < ZFourth) {
+		TargetCameraLocation = FVector(CameraCurrentLocation.X, ZoomedCameraLinePosition.Y, ZoomedCameraLinePosition.Z);
+	} else
+	{
+		TargetCameraLocation = FVector(CameraCurrentLocation.X, NormalCameraLinePosition.Y, NormalCameraLinePosition.Z);
+	}
+	CameraMovementDirection = FVector(CameraMovementDirection.X, (TargetCameraLocation.Y - CameraCurrentLocation.Y) * CameraLag, (TargetCameraLocation.Z - CameraCurrentLocation.Z) * CameraLag);
+	UE_LOG(LogTemp, Warning, TEXT("Camera direction %f %f"), TargetCameraLocation.X, TargetCameraLocation.Y, TargetCameraLocation.Z);
+}
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
-    FVector MovePoint = FVector(0, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds, Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds);
-    Sprite->AddWorldOffset(MovePoint, true);
+    HeroMoveDirection = FVector(HeroMoveDirection.X, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle));
+}
+
+void AMainCharacterPawn::MoveHero() {
+	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
+}
+
+void AMainCharacterPawn::MoveCamera() {
+	Camera->AddWorldOffset(CameraMovementDirection, true);
 }
