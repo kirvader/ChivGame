@@ -11,6 +11,7 @@ class UCameraComponent;
 class UStaticMeshComponent;
 class USceneComponent;
 class UPaperSprite;
+class USoundCue;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -33,6 +34,7 @@ private:
 	void CalculateCameraZoomWhenPlayerIsNear();
 	void MoveHero();
 	void MoveCamera();
+	void UpdateHeroIsMoving();
 	// Скорость персонажа по обеим осям
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedUpDown = 500.0f;
@@ -54,18 +56,19 @@ private:
 	// Для того чтобы камера не сразу ехала за игроком, а с небольшой задержкой
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float CameraLag = 0.6f;
-	float RadiansPlaneAngle = 5.f;
-	UPaperSprite *BackgroundSprite;
 	FVector HeroMoveDirection;
 	// Четверть экрана за этой полосой(по оси Z) TODO() - автоматизировать его нахождение
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float ZFourth = -600.f;
 	// линия по которой движется не приближенная камера
-	FVector NormalCameraLinePosition = FVector(0.f, 1440.f, 16.f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	FVector NormalCameraLinePosition = FVector(0.f, 1420.f, 16.f);
 	// линия по которой движется приближенная камера
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	FVector ZoomedCameraLinePosition = FVector(0.f, 960.f, -230.f);
 	// глобальный счетчик смещения камеры (вроде как оптимизация)
 	FVector CameraMovementDirection = FVector(0.f, 0.f, 0.f);
+	float RadiansPlaneAngle = 5.f;
 	
 
 
@@ -77,6 +80,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// Нужно ли слышать звук шагов в данный момент
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio", meta = (AllowPrivateAccess = "true"))
+	bool PlayerIsMoving;
 
 protected:
 	// Called when the game starts or when spawned

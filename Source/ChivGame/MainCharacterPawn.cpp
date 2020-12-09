@@ -6,6 +6,10 @@
 #include "PaperFlipbookComponent.h"
 #include "PaperSprite.h"
 #include "Components/StaticMeshComponent.h"
+#include "Sound/SoundCue.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include<sstream>
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -22,6 +26,7 @@ AMainCharacterPawn::AMainCharacterPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -29,17 +34,18 @@ void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
-
 }
 
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateHeroIsMoving();
 	MoveHero();
 	CalculateCameraMoveLeftRightInput();
 	CalculateCameraZoomWhenPlayerIsNear();
 	MoveCamera();
+	UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
 
 // Called to bind functionality to input
@@ -83,7 +89,7 @@ void AMainCharacterPawn::CalculateCameraZoomWhenPlayerIsNear()
 		TargetCameraLocation = FVector(CameraCurrentLocation.X, NormalCameraLinePosition.Y, NormalCameraLinePosition.Z);
 	}
 	CameraMovementDirection = FVector(CameraMovementDirection.X, (TargetCameraLocation.Y - CameraCurrentLocation.Y) * CameraLag, (TargetCameraLocation.Z - CameraCurrentLocation.Z) * CameraLag);
-	UE_LOG(LogTemp, Warning, TEXT("Camera direction %f %f"), TargetCameraLocation.X, TargetCameraLocation.Y, TargetCameraLocation.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("Camera direction %f %f"), TargetCameraLocation.X, TargetCameraLocation.Y, TargetCameraLocation.Z);
 }
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
@@ -92,8 +98,19 @@ void AMainCharacterPawn::CalculateMoveUpDownInput(float Value)
 
 void AMainCharacterPawn::MoveHero() {
 	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
+	HeroMoveDirection = FVector(0, 0, 0);
 }
 
 void AMainCharacterPawn::MoveCamera() {
 	Camera->AddWorldOffset(CameraMovementDirection, true);
+	CameraMovementDirection = FVector(0, 0, 0);
 }
+
+void AMainCharacterPawn::UpdateHeroIsMoving() 
+{
+	PlayerIsMoving = HeroMoveDirection.Size() > 0.1;
+	FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
+}
+
