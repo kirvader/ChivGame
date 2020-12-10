@@ -69,7 +69,12 @@ private:
 	// глобальный счетчик смещения камеры (вроде как оптимизация)
 	FVector CameraMovementDirection = FVector(0.f, 0.f, 0.f);
 	float RadiansPlaneAngle = 5.f;
-	
+	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
+	// Используется для фокусировки камеры на соответствующем объекте
+	AActor *CurrentInteractiveActor = nullptr;
+
+
+
 
 
 
@@ -83,10 +88,18 @@ public:
 	// Нужно ли слышать звук шагов в данный момент
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio", meta = (AllowPrivateAccess = "true"))
 	bool PlayerIsMoving;
+	void SetCurrentInteractiveActor(AActor *ActorRef);
+	
+	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	void InteractTable();
+
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	// Called when E pressed
+	void OnInteract();
 
 
 };

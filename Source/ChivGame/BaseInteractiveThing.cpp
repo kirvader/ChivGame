@@ -3,6 +3,7 @@
 
 #include "BaseInteractiveThing.h"
 #include "Components/BoxComponent.h"
+#include "ChivGame/MainCharacterPawn.h"
 #include "PaperSpriteComponent.h"
 
 
@@ -60,6 +61,8 @@ void ABaseInteractiveThing::OnTriggerOverlapBegin
 		(OtherActor == ActorThatTriggers || 
 		ActorThatTriggers == nullptr))
 	{
+		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(ActorThatTriggers);
+		CastedActor->SetCurrentInteractiveActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}

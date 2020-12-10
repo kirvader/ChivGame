@@ -36,6 +36,12 @@ void AMainCharacterPawn::BeginPlay()
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
 }
 
+void AMainCharacterPawn::OnInteract() 
+{
+	if (CurrentInteractiveActor == nullptr) return; // игрок находится не в зоне взаимодействия
+	InteractTable();
+}
+
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
@@ -45,16 +51,33 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 	CalculateCameraMoveLeftRightInput();
 	CalculateCameraZoomWhenPlayerIsNear();
 	MoveCamera();
-	UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
+	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
 
 // Called to bind functionality to input
 void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
 	
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
+}
+
+void AMainCharacterPawn::SetCurrentInteractiveActor(AActor *ActorRef) 
+{
+	CurrentInteractiveActor = ActorRef;
+	// FString str = CurrentInteractiveActor== nullptr ? TEXT("nullptr") : TEXT("good thing");
+	
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
+}
+
+
+
+void AMainCharacterPawn::InteractTable_Implementation() 
+{
+	
 }
 
 void AMainCharacterPawn::CalculateCameraMoveLeftRightInput() 
@@ -77,18 +100,22 @@ void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value)
     HeroMoveDirection = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, HeroMoveDirection.Y, HeroMoveDirection.Z);
 	
 }
+
 void AMainCharacterPawn::CalculateCameraZoomWhenPlayerIsNear() 
 {
-	FVector PlayerPawnLocation = HeroSprite->GetComponentLocation();
-	FVector CameraCurrentLocation = Camera->GetComponentLocation();
-	FVector TargetCameraLocation;
-	if (PlayerPawnLocation.Z < ZFourth) {
-		TargetCameraLocation = FVector(CameraCurrentLocation.X, ZoomedCameraLinePosition.Y, ZoomedCameraLinePosition.Z);
-	} else
-	{
-		TargetCameraLocation = FVector(CameraCurrentLocation.X, NormalCameraLinePosition.Y, NormalCameraLinePosition.Z);
-	}
-	CameraMovementDirection = FVector(CameraMovementDirection.X, (TargetCameraLocation.Y - CameraCurrentLocation.Y) * CameraLag, (TargetCameraLocation.Z - CameraCurrentLocation.Z) * CameraLag);
+	// There we have to zoom camera to CurrentInteractiveActor
+	// FVector PlayerPawnLocation = HeroSprite->GetComponentLocation();
+	// FVector CameraCurrentLocation = Camera->GetComponentLocation();
+	// FVector TargetCameraLocation;
+	// if (PlayerPawnLocation.Z < ZFourth)
+	// {
+	// 	TargetCameraLocation = FVector(CameraCurrentLocation.X, ZoomedCameraLinePosition.Y, ZoomedCameraLinePosition.Z);
+	// }
+	// else
+	// {
+	// 	TargetCameraLocation = FVector(CameraCurrentLocation.X, NormalCameraLinePosition.Y, NormalCameraLinePosition.Z);
+	// }
+	// CameraMovementDirection = FVector(CameraMovementDirection.X, (TargetCameraLocation.Y - CameraCurrentLocation.Y) * CameraLag, (TargetCameraLocation.Z - CameraCurrentLocation.Z) * CameraLag);
 	//UE_LOG(LogTemp, Warning, TEXT("Camera direction %f %f"), TargetCameraLocation.X, TargetCameraLocation.Y, TargetCameraLocation.Z);
 }
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
