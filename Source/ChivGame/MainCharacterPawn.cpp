@@ -38,8 +38,11 @@ void AMainCharacterPawn::BeginPlay()
 
 void AMainCharacterPawn::OnInteract() 
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("called Interact")));
 	if (CurrentInteractiveActor == nullptr) return; // игрок находится не в зоне взаимодействия
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Interacted on table")));
 	InteractTable();
+	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
 }
 
 // Called every frame
@@ -49,7 +52,8 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 	UpdateHeroIsMoving();
 	MoveHero();
 	CalculateCameraMoveLeftRightInput();
-	CalculateCameraZoomWhenPlayerIsNear();
+	CalculateCameraFOVAndZoom();
+	ZoomCamera();
 	MoveCamera();
 	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
@@ -68,6 +72,9 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void AMainCharacterPawn::SetCurrentInteractiveActor(AActor *ActorRef) 
 {
 	CurrentInteractiveActor = ActorRef;
+	if (CurrentInteractiveActor == nullptr) {
+		TargetCameraFOV = NormalFOV;
+	}
 	// FString str = CurrentInteractiveActor== nullptr ? TEXT("nullptr") : TEXT("good thing");
 	
 	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
@@ -101,23 +108,30 @@ void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value)
 	
 }
 
-void AMainCharacterPawn::CalculateCameraZoomWhenPlayerIsNear() 
+void AMainCharacterPawn::CalculateCameraFOVAndZoom() 
 {
-	// There we have to zoom camera to CurrentInteractiveActor
-	// FVector PlayerPawnLocation = HeroSprite->GetComponentLocation();
-	// FVector CameraCurrentLocation = Camera->GetComponentLocation();
-	// FVector TargetCameraLocation;
-	// if (PlayerPawnLocation.Z < ZFourth)
-	// {
-	// 	TargetCameraLocation = FVector(CameraCurrentLocation.X, ZoomedCameraLinePosition.Y, ZoomedCameraLinePosition.Z);
-	// }
-	// else
-	// {
-	// 	TargetCameraLocation = FVector(CameraCurrentLocation.X, NormalCameraLinePosition.Y, NormalCameraLinePosition.Z);
-	// }
-	// CameraMovementDirection = FVector(CameraMovementDirection.X, (TargetCameraLocation.Y - CameraCurrentLocation.Y) * CameraLag, (TargetCameraLocation.Z - CameraCurrentLocation.Z) * CameraLag);
-	//UE_LOG(LogTemp, Warning, TEXT("Camera direction %f %f"), TargetCameraLocation.X, TargetCameraLocation.Y, TargetCameraLocation.Z);
+	if (abs(CurrentCameraFOV - TargetCameraFOV) > 1.f)
+		CurrentCameraFOV = CurrentCameraFOV + (TargetCameraFOV - CurrentCameraFOV) * CameraLagFOV;
+	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
+	if (TargetCameraFOV != ZoomedFOV) {
+		FVector CameraCurrentLocation = Camera->GetComponentLocation();
+		if (abs(CameraCurrentLocation.Z) < 0.2f) return;
+		float ZDirection = CameraCurrentLocation.Z * (1 - CameraLagFOV) - CameraCurrentLocation.Z;
+		CameraMovementDirection = FVector(CameraMovementDirection.X, CameraMovementDirection.Y, ZDirection);
+		return;
+	}
+	FVector CameraCurrentLocation = Camera->GetComponentLocation();
+	if (CurrentInteractiveActor->GetActorLocation().Z < -300.f) {
+		float ZDirection = (-200 - CameraCurrentLocation.Z) * CameraLagFOV;
+		CameraMovementDirection = FVector(CameraMovementDirection.X, CameraMovementDirection.Y, ZDirection);
+	}
 }
+
+void AMainCharacterPawn::ZoomCamera() 
+{
+	Camera->SetFieldOfView(CurrentCameraFOV);
+}
+
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
     HeroMoveDirection = FVector(HeroMoveDirection.X, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle));

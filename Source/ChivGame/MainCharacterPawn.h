@@ -31,7 +31,9 @@ private:
 	void CalculateMoveLeftRightInput(float Value);
 	void CalculateCameraMoveLeftRightInput();
 	void CalculateMoveUpDownInput(float Value);
-	void CalculateCameraZoomWhenPlayerIsNear();
+	void CalculateCameraFOVAndZoom();
+	void ZoomCamera();
+	
 	void MoveHero();
 	void MoveCamera();
 	void UpdateHeroIsMoving();
@@ -56,22 +58,24 @@ private:
 	// Для того чтобы камера не сразу ехала за игроком, а с небольшой задержкой
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float CameraLag = 0.6f;
-	FVector HeroMoveDirection;
-	// Четверть экрана за этой полосой(по оси Z) TODO() - автоматизировать его нахождение
+	// Приближенный угол обзора камеры(когда игрок взаимодействует)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	float ZFourth = -600.f;
-	// линия по которой движется не приближенная камера
+	float ZoomedFOV = 70.f;
+	// Нормальный угол обзора камеры
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	FVector NormalCameraLinePosition = FVector(0.f, 1420.f, 16.f);
-	// линия по которой движется приближенная камера
+	float NormalFOV = 90.f;
+	// Коэффициент задержки приближения камеры
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	FVector ZoomedCameraLinePosition = FVector(0.f, 960.f, -230.f);
+	float CameraLagFOV = 0.07f;
 	// глобальный счетчик смещения камеры (вроде как оптимизация)
 	FVector CameraMovementDirection = FVector(0.f, 0.f, 0.f);
 	float RadiansPlaneAngle = 5.f;
+	float CurrentCameraFOV = NormalFOV;
+	float TargetCameraFOV = NormalFOV;
 	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
 	// Используется для фокусировки камеры на соответствующем объекте
 	AActor *CurrentInteractiveActor = nullptr;
+	FVector HeroMoveDirection;
 
 
 
