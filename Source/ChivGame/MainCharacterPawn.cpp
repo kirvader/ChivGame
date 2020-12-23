@@ -9,6 +9,8 @@
 #include "Sound/SoundCue.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "ChivGame/Item.h"
+#include "ChivGame/InventoryComponent.h"
 #include<sstream>
 
 // Sets default values
@@ -27,6 +29,9 @@ AMainCharacterPawn::AMainCharacterPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+
+
 }
 
 // Called when the game starts or when spawned
@@ -38,9 +43,9 @@ void AMainCharacterPawn::BeginPlay()
 
 void AMainCharacterPawn::OnInteract() 
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("called Interact")));
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("called Interact")));
 	if (CurrentInteractiveActor == nullptr) return; // игрок находится не в зоне взаимодействия
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Interacted on table")));
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Interacted on table")));
 	InteractTable();
 	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
 }
@@ -155,3 +160,10 @@ void AMainCharacterPawn::UpdateHeroIsMoving()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
 }
 
+void AMainCharacterPawn::UseItem(UItem *Item) 
+{
+	if (Item) {
+		Item->Use(this);
+		Item->OnUse(this);
+	}
+}

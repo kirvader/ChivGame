@@ -8,10 +8,12 @@
 
 class UPaperFlipbookComponent;
 class UCameraComponent;
+class UInventoryComponent;
 class UStaticMeshComponent;
 class USceneComponent;
 class UPaperSprite;
 class USoundCue;
+class UItem;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -21,6 +23,9 @@ private:
 	// Камера
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent *Camera;
+	// Инвентарь
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInventoryComponent *Inventory;
 	// Моделька персонажа
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbookComponent *HeroSprite;
@@ -76,6 +81,9 @@ private:
 	// Используется для фокусировки камеры на соответствующем объекте
 	AActor *CurrentInteractiveActor = nullptr;
 	FVector HeroMoveDirection;
+	
+
+
 
 
 
@@ -90,12 +98,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// Нужно ли слышать звук шагов в данный момент
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	bool PlayerIsMoving;
 	void SetCurrentInteractiveActor(AActor *ActorRef);
 	
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
 	void InteractTable();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health = 60.f;
+	
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem(UItem *Item);
 
 
 
