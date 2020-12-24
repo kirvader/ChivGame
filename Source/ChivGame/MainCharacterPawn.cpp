@@ -4,7 +4,14 @@
 #include "MainCharacterPawn.h"
 #include "Camera/CameraComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "PaperSprite.h"
 #include "Components/StaticMeshComponent.h"
+#include "Sound/SoundCue.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "ChivGame/Item.h"
+#include "ChivGame/InventoryComponent.h"
+#include<sstream>
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -14,40 +21,87 @@ AMainCharacterPawn::AMainCharacterPawn()
 
 	HeroStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComponent"));
 	RootComponent = HeroStaticMesh;
+	HeroStaticMesh->SetSimulatePhysics(true);
 
-	Sprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Sprite"));
-	Sprite->SetupAttachment(RootComponent);
+	HeroSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HeroSprite"));
+	HeroSprite->SetupAttachment(RootComponent);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
+
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+
+
 }
 
 // Called when the game starts or when spawned
 void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
+}
+
+void AMainCharacterPawn::OnInteract() 
+{
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("called Interact")));
+	if (CurrentInteractiveActor == nullptr) return; // игрок находится не в зоне взаимодействия
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Interacted on table")));
+	InteractTable();
+	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
+}
+
+void AMainCharacterPawn::SwitchItem() 
+{
+	if (Inventory->CurrentItem == nullptr) return;
+	Inventory->SwitchToNextItem();
 }
 
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateHeroIsMoving();
+	MoveHero();
+	CalculateCameraMoveLeftRightInput();
+	CalculateCameraFOVAndZoom();
+	ZoomCamera();
+	MoveCamera();
+	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
 
 // Called to bind functionality to input
 void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
+	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
 	
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
 
-void AMainCharacterPawn::CameraMoveLeftRightInput() 
+void AMainCharacterPawn::SetCurrentInteractiveActor(AActor *ActorRef) 
 {
-	FVector PlayerPawnLocation = Sprite->GetComponentLocation();
+	CurrentInteractiveActor = ActorRef;
+	if (CurrentInteractiveActor == nullptr) {
+		TargetCameraFOV = NormalFOV;
+	}
+	// FString str = CurrentInteractiveActor== nullptr ? TEXT("nullptr") : TEXT("good thing");
+	
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
+}
+
+
+
+void AMainCharacterPawn::InteractTable_Implementation() 
+{
+	
+}
+
+void AMainCharacterPawn::CalculateCameraMoveLeftRightInput() 
+{
+	FVector PlayerPawnLocation = HeroSprite->GetComponentLocation();
 	FVector CameraCurrentLocation = Camera->GetComponentLocation();
 	FVector TargetCameraLocation;
 	if (PlayerPawnLocation.X > CameraCurrentLocation.X) {
@@ -56,23 +110,67 @@ void AMainCharacterPawn::CameraMoveLeftRightInput()
 	{
 		TargetCameraLocation = FVector(std::max(PlayerPawnLocation.X, LeftestCameraPosition), CameraCurrentLocation.Y, CameraCurrentLocation.Z);
 	}
-	FVector CameraMoveDirection = (TargetCameraLocation - CameraCurrentLocation) * CameraLag;
-	Camera->AddWorldOffset(CameraMoveDirection);
+	CameraMovementDirection = FVector((TargetCameraLocation.X - CameraCurrentLocation.X) * CameraLag, CameraMovementDirection.Y, CameraMovementDirection.Z);
 	
-	// UE_LOG(LogTemp, Warning, TEXT("Camera direction %f"), (PlayerPawnLocation.X - CameraCurrentLocation.X) * CameraLag);
 }
 
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
-    FVector MovePoint = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 0, 0);
-	Sprite->AddWorldOffset(MovePoint, true);
-	CameraMoveLeftRightInput();
+    HeroMoveDirection = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, HeroMoveDirection.Y, HeroMoveDirection.Z);
+	
 }
 
+void AMainCharacterPawn::CalculateCameraFOVAndZoom() 
+{
+	if (abs(CurrentCameraFOV - TargetCameraFOV) > 1.f)
+		CurrentCameraFOV = CurrentCameraFOV + (TargetCameraFOV - CurrentCameraFOV) * CameraLagFOV;
+	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
+	if (TargetCameraFOV != ZoomedFOV) {
+		FVector CameraCurrentLocation = Camera->GetComponentLocation();
+		if (abs(CameraCurrentLocation.Z) < 0.2f) return;
+		float ZDirection = CameraCurrentLocation.Z * (1 - CameraLagFOV) - CameraCurrentLocation.Z;
+		CameraMovementDirection = FVector(CameraMovementDirection.X, CameraMovementDirection.Y, ZDirection);
+		return;
+	}
+	FVector CameraCurrentLocation = Camera->GetComponentLocation();
+	if (CurrentInteractiveActor->GetActorLocation().Z < -300.f) {
+		float ZDirection = (-200 - CameraCurrentLocation.Z) * CameraLagFOV;
+		CameraMovementDirection = FVector(CameraMovementDirection.X, CameraMovementDirection.Y, ZDirection);
+	}
+}
 
+void AMainCharacterPawn::ZoomCamera() 
+{
+	Camera->SetFieldOfView(CurrentCameraFOV);
+}
 
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
-    FVector MovePoint = FVector(0, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds, Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds);
-    Sprite->AddWorldOffset(MovePoint, true);
+    HeroMoveDirection = FVector(HeroMoveDirection.X, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle));
+}
+
+void AMainCharacterPawn::MoveHero() {
+	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
+	HeroMoveDirection = FVector(0, 0, 0);
+}
+
+void AMainCharacterPawn::MoveCamera() {
+	Camera->AddWorldOffset(CameraMovementDirection, true);
+	CameraMovementDirection = FVector(0, 0, 0);
+}
+
+void AMainCharacterPawn::UpdateHeroIsMoving() 
+{
+	PlayerIsMoving = HeroMoveDirection.Size() > 0.1;
+	FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
+}
+
+void AMainCharacterPawn::UseItem(UItem *Item) 
+{
+	if (Item) {
+		Item->Use(this);
+		Item->OnUse(this);
+	}
 }

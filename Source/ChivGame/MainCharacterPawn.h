@@ -8,8 +8,12 @@
 
 class UPaperFlipbookComponent;
 class UCameraComponent;
+class UInventoryComponent;
 class UStaticMeshComponent;
 class USceneComponent;
+class UPaperSprite;
+class USoundCue;
+class UItem;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -19,26 +23,38 @@ private:
 	// Камера
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent *Camera;
+	// Инвентарь
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInventoryComponent *Inventory;
 	// Моделька персонажа
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UPaperFlipbookComponent *Sprite;
+	UPaperFlipbookComponent *HeroSprite;
 	// Корень, так как не нашел способа прикрепить все к рут компоненту
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* HeroStaticMesh;
 	// методы двигающие персонажа и камеру
 	void CalculateMoveLeftRightInput(float Value);
-	void CameraMoveLeftRightInput();
+	void CalculateCameraMoveLeftRightInput();
 	void CalculateMoveUpDownInput(float Value);
+	void CalculateCameraFOVAndZoom();
+	void ZoomCamera();
+	
+	void MoveHero();
+	void MoveCamera();
+	void UpdateHeroIsMoving();
 	// Скорость персонажа по обеим осям
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedUpDown = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedLeftRight = 400.0f;
 	// левая и правая границы куда может зайти герой
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float LeftestPosition = 0.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float RightestPosition = 0.0f;
+	// Для настройки угла наклона плоскости по которой ходит игрок
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float PlaneAngle = 5.f;
 	// левая и правая границы куда может зайти камера
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float LeftestCameraPosition = 0.0f;
@@ -47,25 +63,63 @@ private:
 	// Для того чтобы камера не сразу ехала за игроком, а с небольшой задержкой
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float CameraLag = 0.6f;
+	// Приближенный угол обзора камеры(когда игрок взаимодействует)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float ZoomedFOV = 70.f;
+	// Нормальный угол обзора камеры
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float NormalFOV = 90.f;
+	// Коэффициент задержки приближения камеры
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float CameraLagFOV = 0.07f;
+	// глобальный счетчик смещения камеры (вроде как оптимизация)
+	FVector CameraMovementDirection = FVector(0.f, 0.f, 0.f);
+	float RadiansPlaneAngle = 5.f;
+	float CurrentCameraFOV = NormalFOV;
+	float TargetCameraFOV = NormalFOV;
+	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
+	// Используется для фокусировки камеры на соответствующем объекте
+	AActor *CurrentInteractiveActor = nullptr;
+	FVector HeroMoveDirection;
+	
+
+
+
+
+
+
+
 
 public:
 	// Sets default values for this pawn's properties
 	AMainCharacterPawn();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	// Функция, настраиваемая из блупринтов, для приостановки игры и последующего продолжения
-	/*
-	* UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Character")
-	* void PauseGame();
-	* UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Character")
-	* void UnpauseGame();
-	*/
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// Нужно ли слышать звук шагов в данный момент
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	bool PlayerIsMoving;
+	
+	void SetCurrentInteractiveActor(AActor *ActorRef);
+	
+	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	void InteractTable();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health = 60.f;
+	
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem(UItem *Item);
+
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	// Called when E pressed
+	void OnInteract();
+	void SwitchItem();
 
 
 };
