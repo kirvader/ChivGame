@@ -23,10 +23,7 @@ public:
 	TArray<UItem *> DefaultItems;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
-	int32 Capacity;
-	
-	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	void InventoryUpdate();
+	int32 Capacity = 20;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Items")
 	TArray<UItem *> Items;
@@ -36,7 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 	UItem *CurrentItem = nullptr;
 
-	void TestFunction();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Items")
+ 	void InventoryUpdate();
+
 	
 
 protected:

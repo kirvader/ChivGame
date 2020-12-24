@@ -50,6 +50,12 @@ void AMainCharacterPawn::OnInteract()
 	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
 }
 
+void AMainCharacterPawn::SwitchItem() 
+{
+	if (Inventory->CurrentItem == nullptr) return;
+	Inventory->SwitchToNextItem();
+}
+
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
@@ -69,6 +75,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
+	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
 	
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);

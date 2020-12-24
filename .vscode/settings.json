@@ -1,7 +1,10 @@
 {
 	"files.exclude": {
-		"C:/ChivGame/.vscode": true,
-		"C:/ChivGame/Content": true,
-		"C:/ChivGame/Intermediate": true
+		"C:/development/ChivGame/.git": true,
+		"C:/development/ChivGame/.vscode": true,
+		"C:/development/ChivGame/Content": true,
+		"C:/development/ChivGame/DerivedDataCache": true,
+		"C:/development/ChivGame/Intermediate": true,
+		"C:/development/ChivGame/Saved": true
 	}
 }

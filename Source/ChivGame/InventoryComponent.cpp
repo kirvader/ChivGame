@@ -96,6 +96,7 @@ void UInventoryComponent::InventoryUpdate_Implementation()
 }
 
 
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {

@@ -100,6 +100,7 @@ public:
 	// Нужно ли слышать звук шагов в данный момент
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	bool PlayerIsMoving;
+	
 	void SetCurrentInteractiveActor(AActor *ActorRef);
 	
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
@@ -118,6 +119,7 @@ protected:
 	virtual void BeginPlay() override;
 	// Called when E pressed
 	void OnInteract();
+	void SwitchItem();
 
 
 };

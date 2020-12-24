@@ -10,18 +10,7 @@
 		}
 	],
 	"settings": {
-		"typescript.tsc.autoDetect": "off",
-		"files.associations": {
-			"algorithm": "cpp",
-			"chrono": "cpp",
-			"memory": "cpp",
-			"limits": "cpp",
-			"random": "cpp",
-			"utility": "cpp",
-			"valarray": "cpp",
-			"ratio": "cpp",
-			"iosfwd": "cpp"
-		}
+		"typescript.tsc.autoDetect": "off"
 	},
 	"extensions": {
 		"recommendations": [
