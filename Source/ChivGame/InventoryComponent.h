@@ -19,17 +19,18 @@ public:
 	bool AddItem(UItem *Item);
 	bool RemoveItem(UItem *Item);
 
-	UPROPERTY(EditDefaultsOnly, Instanced)
-	TArray<UItem *> DefaultItems;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+	TArray<TSubclassOf<UItem> > DefaultItems;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	int32 Capacity = 20;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Items")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Items")
 	TArray<UItem *> Items;
 
+	UFUNCTION(BlueprintCallable)
 	void SwitchToNextItem();
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 	UItem *CurrentItem = nullptr;
 
@@ -39,8 +40,10 @@ public:
 	
 
 protected:
+	void AddDefaults();
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
 
 		
 };

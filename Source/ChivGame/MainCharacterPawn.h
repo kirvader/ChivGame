@@ -24,8 +24,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent *Camera;
 	// Инвентарь
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UInventoryComponent *Inventory;
+	
 	// Моделька персонажа
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbookComponent *HeroSprite;
@@ -111,6 +110,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Items")
 	void UseItem(UItem *Item);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInventoryComponent *Inventory;
 
 
 
