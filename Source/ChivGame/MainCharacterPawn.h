@@ -78,8 +78,7 @@ private:
 	float TargetCameraFOV = NormalFOV;
 	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
 	// Используется для фокусировки камеры на соответствующем объекте
-	AActor* CurrentInteractiveActor = nullptr;
-	AActor* CurrentInteractiveItem = nullptr;
+	
 	FVector HeroMoveDirection;
 	
 
@@ -100,6 +99,11 @@ public:
 	// Нужно ли слышать звук шагов в данный момент
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	bool PlayerIsMoving;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+	AActor* CurrentInteractiveActor = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+	AActor* CurrentInteractiveItem = nullptr;
 	
 	void SetCurrentInteractiveActor(AActor *ActorRef);
 

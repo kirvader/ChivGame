@@ -19,6 +19,7 @@ public:
 	// Sets default values for this actor's properties
 	AInteractableItem();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 	UItem* CastedItemInInventory = nullptr;
 
 protected:

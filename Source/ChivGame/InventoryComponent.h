@@ -16,7 +16,9 @@ class CHIVGAME_API UInventoryComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();
+	UFUNCTION(BlueprintCallable)
 	bool AddItem(UItem *Item);
+	UFUNCTION(BlueprintCallable)
 	bool RemoveItem(UItem *Item);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
