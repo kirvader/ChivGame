@@ -78,7 +78,8 @@ private:
 	float TargetCameraFOV = NormalFOV;
 	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
 	// Используется для фокусировки камеры на соответствующем объекте
-	AActor *CurrentInteractiveActor = nullptr;
+	AActor* CurrentInteractiveActor = nullptr;
+	AActor* CurrentInteractiveItem = nullptr;
 	FVector HeroMoveDirection;
 	
 
@@ -101,9 +102,14 @@ public:
 	bool PlayerIsMoving;
 	
 	void SetCurrentInteractiveActor(AActor *ActorRef);
+
+	void SetCurrentInteractiveItem(AActor* ActorRef);
 	
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
 	void InteractTable();
+
+	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	void PickUpItem();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health = 60.f;
@@ -121,6 +127,7 @@ protected:
 	// Called when E pressed
 	void OnInteract();
 	void SwitchItem();
+	void OnPickUpItemCall();
 
 
 };

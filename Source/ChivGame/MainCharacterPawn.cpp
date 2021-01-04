@@ -12,6 +12,7 @@
 #include "ChivGame/Item.h"
 #include "ChivGame/InventoryComponent.h"
 #include<sstream>
+#include <ChivGame/InteractableItem.h>
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -56,6 +57,19 @@ void AMainCharacterPawn::SwitchItem()
 	Inventory->SwitchToNextItem();
 }
 
+void AMainCharacterPawn::OnPickUpItemCall()
+{
+	if (CurrentInteractiveItem == nullptr) return;
+	
+	CurrentInteractiveItem->SetActorHiddenInGame(true);
+
+	AInteractableItem* CastedItem = Cast<AInteractableItem>(CurrentInteractiveItem);
+	if (CastedItem == nullptr) return;
+	
+	
+	Inventory->AddItem(CastedItem->CastedItemInInventory);
+}
+
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
@@ -76,6 +90,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
 	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
+	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
 	
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
@@ -92,11 +107,23 @@ void AMainCharacterPawn::SetCurrentInteractiveActor(AActor *ActorRef)
 	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
 }
 
-
-
-void AMainCharacterPawn::InteractTable_Implementation() 
+void AMainCharacterPawn::SetCurrentInteractiveItem(AActor* ActorRef)
 {
-	
+	CurrentInteractiveItem = ActorRef;
+	// FString str = CurrentInteractiveActor== nullptr ? TEXT("nullptr") : TEXT("good thing");
+
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
+}
+
+
+void AMainCharacterPawn::InteractTable_Implementation()
+{
+
+}
+
+void AMainCharacterPawn::PickUpItem_Implementation()
+{
+
 }
 
 void AMainCharacterPawn::CalculateCameraMoveLeftRightInput() 
