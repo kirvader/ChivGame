@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/WidgetComponent.h"
+#include "InteractiveItemWidgetComponent.h"
 #include "BaseInteractiveThing.generated.h"
 
 class UPaperSpriteComponent;
@@ -19,8 +21,12 @@ public:
 	/** Shape of the trigger volume component. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	UShapeComponent* Shape = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,	 Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	UPaperSpriteComponent *Sprite;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
+	UInteractiveItemWidgetComponent* Widget = nullptr;
+	
 	/** Creates a custom UShapeComponent to represent the trigger volume. */
 	UFUNCTION()
 	void SetupShapeComponent();

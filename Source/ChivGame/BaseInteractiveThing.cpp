@@ -4,6 +4,7 @@
 #include "BaseInteractiveThing.h"
 #include "Components/BoxComponent.h"
 #include "ChivGame/MainCharacterPawn.h"
+#include "InteractiveItemWidgetComponent.h"
 #include "PaperSpriteComponent.h"
 
 
@@ -19,6 +20,11 @@ ABaseInteractiveThing::ABaseInteractiveThing()
 	SetupShapeComponent();
 	Sprite = CreateDefaultSubobject<UPaperSpriteComponent>(FName("Sprite"));
 	Sprite->SetupAttachment(RootComponent);
+
+	Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
+	Widget->SetupAttachment(RootComponent);
+	Widget->SetVisibility(false);
+	Widget->SetRelativeLocation(Widget->GetRelativeVector());
 }
 
 void ABaseInteractiveThing::SetupShapeComponent() 
@@ -61,6 +67,7 @@ void ABaseInteractiveThing::OnTriggerOverlapBegin
 		(OtherActor == ActorThatTriggers || 
 		ActorThatTriggers == nullptr))
 	{
+		Widget->SetVisibility(true);
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		CastedActor->SetCurrentInteractiveActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
@@ -82,6 +89,7 @@ void ABaseInteractiveThing::OnTriggerOverlapEnd
 		(OtherActor == ActorThatTriggers || 
 		ActorThatTriggers == nullptr))
 	{
+		Widget->SetVisibility(false);
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		CastedActor->SetCurrentInteractiveActor(nullptr);
 		TriggerOverlapEndEvent.Broadcast();

@@ -56,6 +56,15 @@ void AMainCharacterPawn::SwitchItem()
 	Inventory->SwitchToNextItem();
 }
 
+void AMainCharacterPawn::CallWidget()
+{
+	if (CurrentInteractiveActor == nullptr) return;
+	
+	UE_LOG(LogTemp, Warning,
+		TEXT("Calling widget"));
+
+}
+
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
@@ -76,7 +85,9 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
 	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
-	
+	// It should be like "OpenInteractionMenu"
+	PlayerInputComponent->BindAction("CallWidget", IE_Pressed, this, &AMainCharacterPawn::CallWidget);
+
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
