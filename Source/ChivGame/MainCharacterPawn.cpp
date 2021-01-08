@@ -42,32 +42,32 @@ void AMainCharacterPawn::BeginPlay()
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
 }
 
-void AMainCharacterPawn::OnInteract() 
-{
-	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("called Interact")));
-	if (CurrentInteractiveActor == nullptr) return; // игрок находится не в зоне взаимодействия
-	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Interacted on table")));
-	InteractTable();
-	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
-}
+//void AMainCharacterPawn::OnInteract() 
+//{
+//	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("called Interact")));
+//	if (CurrentInteractiveActor == nullptr) return; // игрок находится не в зоне взаимодействия
+//	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Interacted on table")));
+//	InteractTable();
+//	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
+//}
 //void AMainCharacterPawn::SwitchItem() 
 //{
 //	if (Inventory->CurrentItem == nullptr) return;
 //	Inventory->SwitchToNextItem();
 //}
 
-void AMainCharacterPawn::OnPickUpItemCall()
-{
-	if (CurrentInteractiveItem == nullptr) return;
-	
-	CurrentInteractiveItem->SetActorHiddenInGame(true);
-
-	AInteractableItem* CastedItem = Cast<AInteractableItem>(CurrentInteractiveItem);
-	if (CastedItem == nullptr) return;
-	
-	
-	Inventory->AddItem(CastedItem->CastedItemInInventory);
-}
+//void AMainCharacterPawn::OnPickUpItemCall()
+//{
+//	if (CurrentInteractiveItem == nullptr) return;
+//	
+//	CurrentInteractiveItem->SetActorHiddenInGame(true);
+//
+//	AInteractableItem* CastedItem = Cast<AInteractableItem>(CurrentInteractiveItem);
+//	if (CastedItem == nullptr) return;
+//	
+//	
+//	Inventory->AddItem(CastedItem->CastedItemInInventory);
+//}
 
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
@@ -87,42 +87,33 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
-	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
+	/*PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
+	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);*/
 	
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
 
-void AMainCharacterPawn::SetCurrentInteractiveActor(AActor *ActorRef) 
+
+void AMainCharacterPawn::RemoveInteractableActor(ABaseInteractable* ActorRef)
 {
-	CurrentInteractiveActor = ActorRef;
-	if (CurrentInteractiveActor == nullptr) {
-		TargetCameraFOV = NormalFOV;
-	}
-	// FString str = CurrentInteractiveActor== nullptr ? TEXT("nullptr") : TEXT("good thing");
-	
-	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
+	CurrentInteractableActors.Remove(ActorRef);
 }
 
-void AMainCharacterPawn::SetCurrentInteractiveItem(AActor* ActorRef)
+void AMainCharacterPawn::AddInteractableActor(ABaseInteractable* ActorRef)
 {
-	CurrentInteractiveItem = ActorRef;
-	// FString str = CurrentInteractiveActor== nullptr ? TEXT("nullptr") : TEXT("good thing");
-
-	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Interactive Actor is : %s"), *str));
+	CurrentInteractableActors.Add(ActorRef);
 }
 
-
-void AMainCharacterPawn::InteractTable_Implementation()
-{
-
-}
-
-void AMainCharacterPawn::PickUpItem_Implementation()
-{
-
-}
+//void AMainCharacterPawn::InteractTable_Implementation()
+//{
+//
+//}
+//
+//void AMainCharacterPawn::PickUpItem_Implementation()
+//{
+//
+//}
 
 void AMainCharacterPawn::CalculateCameraMoveLeftRightInput() 
 {
@@ -158,10 +149,10 @@ void AMainCharacterPawn::CalculateCameraFOVAndZoom()
 		return;
 	}
 	FVector CameraCurrentLocation = Camera->GetComponentLocation();
-	if (CurrentInteractiveActor->GetActorLocation().Z < -300.f) {
+	/*if (CurrentInteractiveActor->GetActorLocation().Z < -300.f) {
 		float ZDirection = (-200 - CameraCurrentLocation.Z) * CameraLagFOV;
 		CameraMovementDirection = FVector(CameraMovementDirection.X, CameraMovementDirection.Y, ZDirection);
-	}
+	}*/
 }
 
 void AMainCharacterPawn::ZoomCamera() 

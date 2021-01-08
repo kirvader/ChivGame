@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InteractableItem.h"
+#include "BaseInteractable.h"
 #include <Paper2D/Classes/PaperSpriteComponent.h>
 #include "ChivGame/MainCharacterPawn.h"
 #include <ChivGame/Item.h>
 #include "Components/BoxComponent.h"
 
 // Sets default values
-AInteractableItem::AInteractableItem()
+ABaseInteractable::ABaseInteractable()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(FName("Root Component"));
@@ -21,7 +21,7 @@ AInteractableItem::AInteractableItem()
 
 }
 
-void AInteractableItem::SetupShapeComponent()
+void ABaseInteractable::SetupShapeComponent()
 {
 	// Create the trigger subobject and set it up
 	auto BoxTrigger = CreateDefaultSubobject<UBoxComponent>(FName("Trigger Shape"));
@@ -31,22 +31,22 @@ void AInteractableItem::SetupShapeComponent()
 	TriggerShape = BoxTrigger;
 }
 
-void AInteractableItem::BindTriggerCallbacksToTriggerShape()
+void ABaseInteractable::BindTriggerCallbacksToTriggerShape()
 {
 	if (TriggerShape)
 	{
 		// Workaround. Prevents cached constructors to add delegates twice.
 		TriggerShape->OnComponentBeginOverlap.RemoveDynamic(
-			this, &AInteractableItem::OnTriggerOverlapBegin);
+			this, &ABaseInteractable::OnTriggerOverlapBegin);
 		TriggerShape->OnComponentEndOverlap.RemoveDynamic(
-			this, &AInteractableItem::OnTriggerOverlapEnd);
+			this, &ABaseInteractable::OnTriggerOverlapEnd);
 
-		TriggerShape->OnComponentBeginOverlap.AddDynamic(this, &AInteractableItem::OnTriggerOverlapBegin);
-		TriggerShape->OnComponentEndOverlap.AddDynamic(this, &AInteractableItem::OnTriggerOverlapEnd);
+		TriggerShape->OnComponentBeginOverlap.AddDynamic(this, &ABaseInteractable::OnTriggerOverlapBegin);
+		TriggerShape->OnComponentEndOverlap.AddDynamic(this, &ABaseInteractable::OnTriggerOverlapEnd);
 	}
 }
 
-void AInteractableItem::OnTriggerOverlapBegin
+void ABaseInteractable::OnTriggerOverlapBegin
 (
 	UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
@@ -64,13 +64,13 @@ void AInteractableItem::OnTriggerOverlapBegin
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
-// 		CastedActor->SetCurrentInteractiveItem(this);
+		CastedActor->AddInteractableActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}
 }
 
-void AInteractableItem::OnTriggerOverlapEnd
+void ABaseInteractable::OnTriggerOverlapEnd
 (
 	UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
@@ -86,15 +86,15 @@ void AInteractableItem::OnTriggerOverlapEnd
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
-//		CastedActor->SetCurrentInteractiveItem(nullptr);
+		CastedActor->RemoveInteractableActor(this);
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
 	}
 }
 
-void AInteractableItem::TriggerCallbackOn_Implementation() {}
+void ABaseInteractable::TriggerCallbackOn_Implementation() {}
 
-void AInteractableItem::TriggerCallbackOff()
+void ABaseInteractable::TriggerCallbackOff()
 {
 	UE_LOG(LogTemp, Warning,
 		TEXT("SimpleTriggerVolume::TriggerCallbackOff(). To add functionality, override this function."));
@@ -102,17 +102,10 @@ void AInteractableItem::TriggerCallbackOff()
 
 
 // Called when the game starts or when spawned
-void AInteractableItem::BeginPlay()
+void ABaseInteractable::BeginPlay()
 {
 	Super::BeginPlay();
-	CastedItemInInventory = NewObject<UItem>(ItemInInventory, ItemInInventory->GetFName(), RF_NoFlags, ItemInInventory.GetDefaultObject());
+	if (ItemInInventory != nullptr) CastedItemInInventory = NewObject<UItem>(ItemInInventory, ItemInInventory->GetFName(), RF_NoFlags, ItemInInventory.GetDefaultObject()); // преобразование полученного предмета к используемому виду
 	BindTriggerCallbacksToTriggerShape();
-}
-
-// Called every frame
-void AInteractableItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 

@@ -8,6 +8,8 @@
 
 class UPaperFlipbookComponent;
 class UCameraComponent;
+class ABaseInteractable;
+class ABaseInteractable;
 class UInventoryComponent;
 class UStaticMeshComponent;
 class USceneComponent;
@@ -29,10 +31,15 @@ private:
 	// Корень, так как не нашел способа прикрепить все к рут компоненту
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* HeroStaticMesh;
-	
-	
+
+	// Метод вычисляющий нужное смещение камеры по горизонтали относительно текущего положения в соответствии с вводом игрока
+	void CalculateCameraMoveLeftRightInput();
+
 	// Метод вычисляющий нужное смещение игрока по горизонтали относительно текущего положения в соответствии с вводом игрока
 	void CalculateMoveLeftRightInput(float Value);
+
+	// Метод вычисляющий нужное приближение камеры в соответствии с вводом игрока
+	void CalculateCameraFOVAndZoom();
 	
 	// Метод вычисляющий нужное смещение игрока по вертикали относительно текущего положения в соответствии с вводом игрокаvoid CalculateCameraMoveLeftRightInput();
 	void CalculateMoveUpDownInput(float Value);
@@ -114,23 +121,19 @@ public:
 	
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	AActor* CurrentInteractiveActor = nullptr;
+	TSet<ABaseInteractable*> CurrentInteractableActors;
 
-	// Статичный предмет на земле, который можно взять
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	AActor* CurrentInteractiveItem = nullptr;
+	void AddInteractableActor(ABaseInteractable* ActorRef);
+
+	void RemoveInteractableActor(ABaseInteractable* ActorRef);
 	
-	void SetCurrentInteractiveActor(AActor *ActorRef);
+	//// Вызывается при попытке взаимодействовать со статичным объектом на земле
+	//UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	//void InteractTable();
 
-	void SetCurrentInteractiveItem(AActor* ActorRef);
-	
-	// Вызывается при попытке взаимодействовать со статичным объектом на земле
-	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	void InteractTable();
-
-	// Вызывается при попытке подобрать элемент с земли
-	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	void PickUpItem();
+	//// Вызывается при попытке подобрать элемент с земли
+	//UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	//void PickUpItem();
 
 	// Текущее хп героя
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -150,9 +153,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	// Called when E pressed
-	void OnInteract();
+	//void OnInteract();
 	void SwitchItem();
-	void OnPickUpItemCall();
+	//void OnPickUpItemCall();
 
 
 };

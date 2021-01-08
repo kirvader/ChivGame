@@ -91,10 +91,7 @@ void UInventoryComponent::SwitchToNextItem()
 	CurrentItem = CurrentItem->NextInInventory;
 }
 
-void UInventoryComponent::InventoryUpdate_Implementation() 
-{
-	
-}
+
 
 void UInventoryComponent::AddDefaults()
 {

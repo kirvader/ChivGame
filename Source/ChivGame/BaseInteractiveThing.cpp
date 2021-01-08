@@ -64,7 +64,7 @@ void ABaseInteractiveThing::OnTriggerOverlapBegin
 		ActorThatTriggers == nullptr))
 	{
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
-		CastedActor->SetCurrentInteractiveActor(this);
+		// CastedActor->SetCurrentInteractiveActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}
@@ -85,7 +85,7 @@ void ABaseInteractiveThing::OnTriggerOverlapEnd
 		ActorThatTriggers == nullptr))
 	{
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
-		CastedActor->SetCurrentInteractiveActor(nullptr);
+// 		CastedActor->SetCurrentInteractiveActor(nullptr);
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
 	}
