@@ -16,9 +16,10 @@ ABaseInteractiveThing::ABaseInteractiveThing()
 	// Create a separate root component, so the 
 	// trigger volume may be placed relatively
 	RootComponent = CreateDefaultSubobject<USceneComponent>(FName("Root Component"));
-	SetupShapeComponent();
 	Sprite = CreateDefaultSubobject<UPaperSpriteComponent>(FName("Sprite"));
 	Sprite->SetupAttachment(RootComponent);
+	SetupShapeComponent();
+	
 }
 
 void ABaseInteractiveThing::SetupShapeComponent() 
@@ -27,6 +28,7 @@ void ABaseInteractiveThing::SetupShapeComponent()
 	auto BoxTrigger = CreateDefaultSubobject<UBoxComponent>(FName("Trigger Shape"));
 	BoxTrigger->SetBoxExtent(TriggerExtent);
 	BoxTrigger->SetGenerateOverlapEvents(true);
+	BoxTrigger->SetupAttachment(Sprite);
 	Shape = BoxTrigger;
 }
 
@@ -62,7 +64,7 @@ void ABaseInteractiveThing::OnTriggerOverlapBegin
 		ActorThatTriggers == nullptr))
 	{
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
-		CastedActor->SetCurrentInteractiveActor(this);
+		// CastedActor->SetCurrentInteractiveActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}
@@ -83,7 +85,7 @@ void ABaseInteractiveThing::OnTriggerOverlapEnd
 		ActorThatTriggers == nullptr))
 	{
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
-		CastedActor->SetCurrentInteractiveActor(nullptr);
+// 		CastedActor->SetCurrentInteractiveActor(nullptr);
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
 	}

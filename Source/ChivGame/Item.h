@@ -25,7 +25,7 @@ public:
 	UWorld *World;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-	FText UseActionText;
+	FString UseActionText;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UStaticMesh *PickupMesh;
@@ -34,16 +34,16 @@ public:
 	UTexture2D *InventoryImage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-	FText ItemDisplayName;
+	FString ItemDisplayName;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-	FText ItemDescription;
+	FString ItemDescription;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	float Weight;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
-	TArray<FText> Tags;
+	TArray<FString> Tags;
 	
 	UPROPERTY()
 	UInventoryComponent *OwningInventory;

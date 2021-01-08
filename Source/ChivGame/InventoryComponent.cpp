@@ -10,13 +10,14 @@ UInventoryComponent::UInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
 	// ...
 }
 
 bool UInventoryComponent::AddItem(UItem *Item) 
 {
-	if (!Item || Items.Num() >= Capacity) {
+	
+	if (Item == nullptr || Items.Num() >= Capacity) {
+		UE_LOG(LogTemp, Error, TEXT("Item is null"));
 		return false;
 	}
 	// setting up an item
@@ -26,25 +27,26 @@ bool UInventoryComponent::AddItem(UItem *Item)
 	// adding item to inventory
 	if (CurrentItem == nullptr) {
 		// if there were not any items
+		UE_LOG(LogTemp, Warning, TEXT("size is zero"));
 
 		Item->NextInInventory = Item;
 		Item->PrevInInventory = Item;
 	}
 	else {
 		// if there were some items
+		UE_LOG(LogTemp, Warning, TEXT("size is not zero"));
 		UItem *NextItem = CurrentItem->NextInInventory;
 		Item->NextInInventory = NextItem;
 		CurrentItem->NextInInventory = Item;
 		Item->PrevInInventory = CurrentItem;
 		NextItem->PrevInInventory = Item;
 	}
+	CurrentItem = Item;
 
 	// just to easier explanation
 	// can be deleted
 	Items.Add(Item);
 
-	// updating UI
-	InventoryUpdate();
 	return true;
 }
 
@@ -78,8 +80,6 @@ bool UInventoryComponent::RemoveItem(UItem *Item)
 		// has to be deleted but later
 		Items.RemoveSingle(Item);
 
-		// updating UI
-		InventoryUpdate();
 		return true;
 	}
 	return false;
@@ -87,12 +87,23 @@ bool UInventoryComponent::RemoveItem(UItem *Item)
 
 void UInventoryComponent::SwitchToNextItem() 
 {
+	if (CurrentItem == nullptr) return;
 	CurrentItem = CurrentItem->NextInInventory;
 }
 
-void UInventoryComponent::InventoryUpdate_Implementation() 
+
+
+void UInventoryComponent::AddDefaults()
 {
-	
+	for (TSubclassOf<UItem> item : DefaultItems) {
+		if (!item->IsValidLowLevel()) continue;
+
+		UItem* ConvertedItem = NewObject<UItem>(this, item->GetFName(), RF_NoFlags, item.GetDefaultObject());
+		/*FString converted = item->ItemDisplayName;*/
+		// UE_LOG(LogTemp, Warning, TEXT("lol\n"));
+
+		AddItem(ConvertedItem);
+	} // adding default items
 }
 
 
@@ -100,7 +111,14 @@ void UInventoryComponent::InventoryUpdate_Implementation()
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
+	
 	Super::BeginPlay();
 	// ...
+	AddDefaults();
 	
+	
+	/*
+	FString converted = CurrentItem->PrevInInventory->ItemDisplayName;
+	UE_LOG(LogTemp, Warning, TEXT("CurrentItem->Prev->Name = %s\n"), *converted);*/
 }
+

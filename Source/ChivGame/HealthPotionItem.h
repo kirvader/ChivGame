@@ -15,6 +15,7 @@ class CHIVGAME_API UHealthPotionItem : public UItem
 	GENERATED_BODY()
 
 public:
+	// Количество хп, которое восстановится при использовании
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Characteristics")
 	float Healing = 10.f;
 	
