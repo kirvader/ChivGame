@@ -19,6 +19,7 @@ public:
 	/** Shape of the trigger volume component. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UShapeComponent* Shape = nullptr;
+	// Спрайт предмета
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UPaperSpriteComponent *Sprite;
 	/** Creates a custom UShapeComponent to represent the trigger volume. */
@@ -35,7 +36,7 @@ public:
 		bool bFromSweep, const
 		FHitResult& SweepResult
 	);
-	
+	// Начальный размер области триггера
 	UPROPERTY(EditAnywhere, Category = "Geometry")
 	FVector TriggerExtent = FVector(50.f, 50.f, 20.f);
 

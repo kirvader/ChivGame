@@ -19,13 +19,15 @@ public:
 	// Sets default values for this actor's properties
 	AInteractableItem();
 
+	// Предмет, который добавят в инвентарь
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 	UItem* CastedItemInInventory = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
+	// Функция, устанавливающая область триггера
 	void SetupShapeComponent();
 
 
@@ -33,15 +35,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Блупринтовый ввод предмета инвентаря
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	TSubclassOf<UItem> ItemInInventory;
 
+	// Спрайт поднимаемого элемента в мире
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UPaperSpriteComponent *ItemSprite;
 
+	// область в которой объект поднимаем
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UShapeComponent* TriggerShape = nullptr;
 
+	// Метод вызывающийся при входе кого-то в триггер
 	UFUNCTION()
 	void OnTriggerOverlapBegin
 	(
@@ -53,6 +59,7 @@ public:
 		FHitResult& SweepResult
 	);
 
+	// Начальные размеры области триггера
 	UPROPERTY(EditAnywhere, Category = "Geometry")
 	FVector TriggerExtent = FVector(50.f, 50.f, 20.f);
 
