@@ -14,15 +14,16 @@ class CHIVGAME_API UInteractiveItemWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
 
-public:
-	// Getting CE while setting variables as "private"
+private:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
 		int32 x = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
 		int32 y = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
 		int32 z = 100;
+
+public:
 
 	UInteractiveItemWidgetComponent();
 

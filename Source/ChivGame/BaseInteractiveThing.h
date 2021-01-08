@@ -21,9 +21,17 @@ public:
 	/** Shape of the trigger volume component. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	UShapeComponent* Shape = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,	 Category = "Setup", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	UPaperSpriteComponent *Sprite;
 	
+	/**
+	 * Material attached to sprite
+	 * Great example on https://github.com/Harrison1/unrealcpp/tree/master/ChangeMaterialMesh
+	 * Example of creating shimmering materials showed here: https://www.youtube.com/watch?v=gDa5E1ndGG8
+	 */	
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	UMaterialInterface* ShimmeryMaterial;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	UInteractiveItemWidgetComponent* Widget = nullptr;
 	

@@ -32,6 +32,8 @@ private:
 	// Корень, так как не нашел способа прикрепить все к рут компоненту
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* HeroStaticMesh;
+
+
 	// методы двигающие персонажа и камеру
 	void CalculateMoveLeftRightInput(float Value);
 	void CalculateCameraMoveLeftRightInput();
@@ -81,9 +83,9 @@ private:
 	// Используется для фокусировки камеры на соответствующем объекте
 	AActor *CurrentInteractiveActor = nullptr;
 	FVector HeroMoveDirection;
-	
-
-
+	// Последний actor, к которому была приближена камера
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	AActor* LastZoomedActor = nullptr;
 
 
 

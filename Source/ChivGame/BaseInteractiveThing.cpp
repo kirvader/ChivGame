@@ -18,9 +18,12 @@ ABaseInteractiveThing::ABaseInteractiveThing()
 	// trigger volume may be placed relatively
 	RootComponent = CreateDefaultSubobject<USceneComponent>(FName("Root Component"));
 	SetupShapeComponent();
+	
 	Sprite = CreateDefaultSubobject<UPaperSpriteComponent>(FName("Sprite"));
 	Sprite->SetupAttachment(RootComponent);
 
+	ShimmeryMaterial = CreateDefaultSubobject<UMaterialInterface>(TEXT("ShimmeryMaterial"));
+	
 	Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
 	Widget->SetupAttachment(RootComponent);
 	Widget->SetVisibility(false);
@@ -67,7 +70,9 @@ void ABaseInteractiveThing::OnTriggerOverlapBegin
 		(OtherActor == ActorThatTriggers || 
 		ActorThatTriggers == nullptr))
 	{
-		Widget->SetVisibility(true);
+		//Widget->SetVisibility(true);
+		// 0 parameter is for material index.
+		Sprite->SetMaterial(0, ShimmeryMaterial);
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		CastedActor->SetCurrentInteractiveActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
@@ -89,8 +94,9 @@ void ABaseInteractiveThing::OnTriggerOverlapEnd
 		(OtherActor == ActorThatTriggers || 
 		ActorThatTriggers == nullptr))
 	{
-		Widget->SetVisibility(false);
+		//Widget->SetVisibility(false);
 		AMainCharacterPawn *CastedActor = Cast<AMainCharacterPawn>(OtherActor);
+		Sprite->SetMaterial(0, NULL);
 		CastedActor->SetCurrentInteractiveActor(nullptr);
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
