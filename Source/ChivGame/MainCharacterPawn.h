@@ -138,13 +138,13 @@ public:
 
 	void RemoveInteractableActor(ABaseInteractable* ActorRef);
 	
-	//// Вызывается при попытке взаимодействовать со статичным объектом на земле
-	//UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	//void InteractTable();
+	// Вызывается при попытке взаимодействовать со статичным объектом на земле
+	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	void InteractTable(ABaseInteractable* InteractableThing);
 
-	//// Вызывается при попытке подобрать элемент с земли
-	//UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	//void PickUpItem();
+	// Вызывается при попытке подобрать элемент с земли
+	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
+	void PickUpItem(ABaseInteractable* PickupAbleItem);
 
 	// Текущее хп героя
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -164,12 +164,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	// Called when E pressed
-	//void OnInteract();
+	void OnInteract();
 
 	void SwitchItem();
 
 	void CallWidget();
 
-	//void OnPickUpItemCall();
+	void OnPickUpItemCall();
 
 };

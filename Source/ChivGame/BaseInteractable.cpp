@@ -97,6 +97,7 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		ItemSprite->SetMaterial(0, NULL);
 		Widget->SetVisibility(false);
 		CastedActor->SetNormalFOV();
+		
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
 	}
