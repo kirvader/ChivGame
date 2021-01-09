@@ -9,10 +9,33 @@
 #include "Sound/SoundCue.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "ChivGame/Item.h"
-#include "ChivGame/InventoryComponent.h"
-#include<sstream>
-#include <ChivGame/InteractableItem.h>
+#include "Item.h"
+#include "InventoryComponent.h"
+#include "BaseInteractiveThing.h"
+#include "InteractiveItemWidgetComponent.h"
+#include "InteractableItem.h"
+#include "BaseInteractable.h"
+#include <algorithm>
+
+namespace {
+	ABaseInteractable* GetFirstElement(AMainCharacterPawn* CurrentCharacter) {
+		for (auto Element : CurrentCharacter->CurrentInteractableActors)
+		{
+			return Element;
+		}
+		return nullptr;
+	}
+}
+
+void AMainCharacterPawn::SetNormalFOV()
+{
+	TargetCameraFOV = NormalFOV;
+}
+
+void AMainCharacterPawn::SetZoomedFOV()
+{
+	TargetCameraFOV = ZoomedFOV;
+}
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -31,7 +54,6 @@ AMainCharacterPawn::AMainCharacterPawn()
 	Camera->SetupAttachment(RootComponent);
 
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
-
 
 }
 
@@ -69,6 +91,20 @@ void AMainCharacterPawn::BeginPlay()
 //	Inventory->AddItem(CastedItem->CastedItemInInventory);
 //}
 
+void AMainCharacterPawn::CallWidget()
+{
+	if (CurrentInteractableActors.Num() == 0) return;
+	
+	UE_LOG(LogTemp, Warning,
+		TEXT("Calling widget"));
+
+	if (GetFirstElement(this)) {
+		TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
+		ABaseInteractable* CastedActor = Cast<ABaseInteractable>(GetFirstElement(this));
+		CastedActor->Widget->SetVisibility(!CastedActor->Widget->GetVisibleFlag());
+	}
+}
+
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
@@ -87,9 +123,13 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	//PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
+
+	PlayerInputComponent->BindAction("CallWidget", IE_Pressed, this, &AMainCharacterPawn::CallWidget);
+
 	/*PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
 	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);*/
-	
+
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
@@ -138,8 +178,9 @@ void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value)
 
 void AMainCharacterPawn::CalculateCameraFOVAndZoom() 
 {
-	if (abs(CurrentCameraFOV - TargetCameraFOV) > 1.f)
+	if (abs(CurrentCameraFOV - TargetCameraFOV) > 1.f) {
 		CurrentCameraFOV = CurrentCameraFOV + (TargetCameraFOV - CurrentCameraFOV) * CameraLagFOV;
+	}
 	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 	if (TargetCameraFOV != ZoomedFOV) {
 		FVector CameraCurrentLocation = Camera->GetComponentLocation();

@@ -93,6 +93,14 @@ private:
 	
 	// глобальный счетчик смещения камеры (вроде как оптимизация)
 	FVector CameraMovementDirection = FVector(0.f, 0.f, 0.f);
+
+	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
+	// Используется для фокусировки камеры на соответствующем объекте
+	AActor *CurrentInteractiveActor = nullptr;
+
+	// Последний actor, к которому была приближена камера
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	AActor* LastZoomedActor = nullptr;
 	
 	// Угол наклона плоскости по которой ходит игрок, переведенный в радианы
 	float RadiansPlaneAngle = 5.f;
@@ -108,6 +116,9 @@ private:
 
 
 public:
+	void SetNormalFOV();
+	void SetZoomedFOV();
+	
 	// Sets default values for this pawn's properties
 	AMainCharacterPawn();
 	// Called every frame
@@ -154,8 +165,11 @@ protected:
 	virtual void BeginPlay() override;
 	// Called when E pressed
 	//void OnInteract();
-	void SwitchItem();
-	//void OnPickUpItemCall();
 
+	void SwitchItem();
+
+	void CallWidget();
+
+	//void OnPickUpItemCall();
 
 };

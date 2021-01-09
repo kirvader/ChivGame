@@ -6,11 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "BaseInteractable.generated.h"
 
+class UInteractiveItemWidgetComponent;
+class UMaterialInterface;
 class UPaperSpriteComponent;
 class UShapeComponent;
 class UItem;
 
-UCLASS()
+UCLASS(Abstract)
 class CHIVGAME_API ABaseInteractable : public AActor
 {
 	GENERATED_BODY()
@@ -48,9 +50,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		UShapeComponent* TriggerShape = nullptr;
 
+	/**
+	 * Material attached to sprite
+	 * Great example on https://github.com/Harrison1/unrealcpp/tree/master/ChangeMaterialMesh
+	 * Example of creating shimmering materials showed here: https://www.youtube.com/watch?v=gDa5E1ndGG8
+	 */
+	// Shimmering shader
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		UMaterialInterface* ShimmeryMaterial = nullptr;
+
+	// Menu widget 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
+		UInteractiveItemWidgetComponent* Widget = nullptr;
+
 	// Метод вызывающийся при входе кого-то в триггер
 	UFUNCTION()
-		void OnTriggerOverlapBegin
+		virtual void OnTriggerOverlapBegin
 		(
 			UPrimitiveComponent* OverlappedComponent,
 			AActor* OtherActor,
@@ -66,7 +81,7 @@ public:
 
 	/** Delegate for Shape's overlap end event. */
 	UFUNCTION()
-		void OnTriggerOverlapEnd
+		virtual void OnTriggerOverlapEnd
 		(
 			UPrimitiveComponent* OverlappedComp,
 			AActor* OtherActor,

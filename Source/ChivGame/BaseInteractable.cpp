@@ -6,6 +6,7 @@
 #include "ChivGame/MainCharacterPawn.h"
 #include <ChivGame/Item.h>
 #include "Components/BoxComponent.h"
+#include "InteractiveItemWidgetComponent.h"
 
 // Sets default values
 ABaseInteractable::ABaseInteractable()
@@ -19,6 +20,10 @@ ABaseInteractable::ABaseInteractable()
 	ItemSprite->SetupAttachment(RootComponent);
 	SetupShapeComponent();
 
+	Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
+	Widget->SetupAttachment(RootComponent);
+	Widget->SetVisibility(false);
+	Widget->SetRelativeLocation(Widget->GetRelativeVector());
 }
 
 void ABaseInteractable::SetupShapeComponent()
@@ -65,6 +70,7 @@ void ABaseInteractable::OnTriggerOverlapBegin
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
 		CastedActor->AddInteractableActor(this);
+		ItemSprite->SetMaterial(0, ShimmeryMaterial);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}
@@ -86,7 +92,11 @@ void ABaseInteractable::OnTriggerOverlapEnd
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
+		
 		CastedActor->RemoveInteractableActor(this);
+		ItemSprite->SetMaterial(0, NULL);
+		Widget->SetVisibility(false);
+		CastedActor->SetNormalFOV();
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
 	}
