@@ -37,6 +37,11 @@ void AMainCharacterPawn::SetZoomedFOV()
 	TargetCameraFOV = ZoomedFOV;
 }
 
+void AMainCharacterPawn::ChangeFOV()
+{
+	TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
+}
+
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
 {
@@ -91,19 +96,17 @@ void AMainCharacterPawn::OnPickUpItemCall()
 	Inventory->AddItem(CastedItem->CastedItemInInventory);*/
 }
 
-void AMainCharacterPawn::CallWidget()
-{
-	if (CurrentInteractableActors.Num() == 0) return;
-	
-	UE_LOG(LogTemp, Warning,
-		TEXT("Calling widget"));
-
-	if (GetFirstElement(this)) {
-		TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
-		ABaseInteractable* CastedActor = Cast<ABaseInteractable>(GetFirstElement(this));
-		CastedActor->Widget->SetVisibility(!CastedActor->Widget->GetVisibleFlag());
-	}
-}
+//void AMainCharacterPawn::CallWidget()
+//{
+//	if (CurrentInteractableActors.Num() == 0) return;
+//	
+//	UE_LOG(LogTemp, Warning,
+//		TEXT("Calling widget"));
+//
+//	if (GetFirstElement(this)) {
+//		TargetCameraFOV = NormalFOV + ZoomedFOV - TargetCameraFOV;
+//	}
+//}
 
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
@@ -125,7 +128,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
 
-	PlayerInputComponent->BindAction("CallWidget", IE_Pressed, this, &AMainCharacterPawn::CallWidget);
+	// PlayerInputComponent->BindAction("CallWidget", IE_Pressed, this, &AMainCharacterPawn::CallWidget);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
 	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
@@ -142,6 +145,13 @@ void AMainCharacterPawn::RemoveInteractableActor(ABaseInteractable* ActorRef)
 
 void AMainCharacterPawn::AddInteractableActor(ABaseInteractable* ActorRef)
 {
+	if (ActorRef == nullptr) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("Added action is null"));
+		return;
+	}
+	UE_LOG(LogTemp, Warning,
+		TEXT("Added action is not null"));
 	CurrentInteractableActors.Add(ActorRef);
 }
 

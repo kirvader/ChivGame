@@ -42,6 +42,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	TSubclassOf<UItem> ItemInInventory = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	UTexture2D* ActionImage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	FString ActionText;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	FString ActionDescription;
+
 	// Спрайт элемента в мире. nullptr если не нужен
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UPaperSpriteComponent* ItemSprite = nullptr;

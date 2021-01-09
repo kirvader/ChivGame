@@ -69,8 +69,13 @@ void ABaseInteractable::OnTriggerOverlapBegin
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
+		
 		CastedActor->AddInteractableActor(this);
 		ItemSprite->SetMaterial(0, ShimmeryMaterial);
+		Widget->SetVisibility(true);
+		UE_LOG(LogTemp, Warning,
+			TEXT("Item should had been added"));
+
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}

@@ -118,6 +118,9 @@ private:
 public:
 	void SetNormalFOV();
 	void SetZoomedFOV();
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeFOV();
 	
 	// Sets default values for this pawn's properties
 	AMainCharacterPawn();
@@ -168,7 +171,7 @@ protected:
 
 	void SwitchItem();
 
-	void CallWidget();
+	// void CallWidget();
 
 	void OnPickUpItemCall();
 
