@@ -13,9 +13,9 @@ UInteractiveItemWidgetComponent::UInteractiveItemWidgetComponent()
 void UInteractiveItemWidgetComponent::InitWidget() 
 {
 	Super::InitWidget();
-	if (Widget)
+	if (Super::GetWidget())
 	{
-		UInteractiveItemWidget* WidgetInst = Cast<UInteractiveItemWidget>(Widget);
+		UInteractiveItemWidget* WidgetInst = Cast<UInteractiveItemWidget>(Super::GetWidget());
 		if (WidgetInst)
 		{
 			WidgetInst->SetOwningActor(GetOwner());
