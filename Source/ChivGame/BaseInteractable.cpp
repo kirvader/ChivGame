@@ -21,7 +21,7 @@ ABaseInteractable::ABaseInteractable()
 	SetupShapeComponent();
 
 	Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
-	Widget->SetupAttachment(RootComponent);
+	Widget->SetupAttachment(ItemSprite);
 	Widget->SetVisibility(false);
 	Widget->SetRelativeLocation(Widget->GetRelativeVector());
 }

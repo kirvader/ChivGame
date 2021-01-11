@@ -29,6 +29,9 @@ protected:
 		AActor* OwningActor;
 
 public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WidgetProperty")
+		FString ObjectName;
 	UFUNCTION(BlueprintCallable)
 		void SetOwningActor(AActor* NewOwner);
 

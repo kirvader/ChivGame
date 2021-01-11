@@ -145,9 +145,9 @@ void AMainCharacterPawn::RemoveInteractableActor(ABaseInteractable* ActorRef)
 
 void AMainCharacterPawn::AddInteractableActor(ABaseInteractable* ActorRef)
 {
-	if (ActorRef == nullptr) {
+	if (ActorRef == nullptr || ActorRef->IsHidden()) {
 		UE_LOG(LogTemp, Warning,
-			TEXT("Added action is null"));
+			TEXT("Added action is null or hidden"));
 		return;
 	}
 	UE_LOG(LogTemp, Warning,

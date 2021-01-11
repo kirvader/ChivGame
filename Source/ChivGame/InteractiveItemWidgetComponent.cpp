@@ -3,6 +3,7 @@
 
 #include "InteractiveItemWidgetComponent.h"
 #include "InteractiveItemWidget.h"
+#include "BaseInteractable.h"
 
 UInteractiveItemWidgetComponent::UInteractiveItemWidgetComponent() 
 {
@@ -20,6 +21,7 @@ void UInteractiveItemWidgetComponent::InitWidget()
 		{
 			WidgetInst->SetOwningActor(GetOwner());
 		}
+		WidgetInst->ObjectName = Cast<ABaseInteractable>(GetOwner())->ActionText;
 	}
 }
 

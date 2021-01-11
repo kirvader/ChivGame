@@ -136,9 +136,11 @@ public:
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TSet<ABaseInteractable*> CurrentInteractableActors;
-
+	
+	UFUNCTION(BlueprintCallable)
 	void AddInteractableActor(ABaseInteractable* ActorRef);
 
+	UFUNCTION(BlueprintCallable)
 	void RemoveInteractableActor(ABaseInteractable* ActorRef);
 	
 	// Вызывается при попытке взаимодействовать со статичным объектом на земле
