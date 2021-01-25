@@ -54,6 +54,8 @@ AMainCharacterPawn::AMainCharacterPawn()
 void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Camera->UpdateBackgroundSpriteRange();
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
 }
 
