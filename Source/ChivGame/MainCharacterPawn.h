@@ -46,6 +46,9 @@ private:
 	// Метод, отвечающий на вопрос двигается ли игрок
 	void UpdateHeroIsMoving();
 
+	// Функция отвечающая на вопрос "нужен ли зум?"
+	bool NeedZoom();
+
 	// Скорость движения персонажа по вертикали
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedUpDown = 500.0f;

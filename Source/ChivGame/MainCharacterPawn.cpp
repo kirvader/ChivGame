@@ -142,17 +142,27 @@ void AMainCharacterPawn::PickUpItem_Implementation(ABaseInteractable* PickupAble
 
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
-    HeroMoveDirection = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, HeroMoveDirection.Y, HeroMoveDirection.Z);
+    HeroMoveDirection = FVector(
+		Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 
+		HeroMoveDirection.Y, 
+		HeroMoveDirection.Z
+	);
 	
 }
 
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
-    HeroMoveDirection = FVector(HeroMoveDirection.X, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle));
+    HeroMoveDirection = FVector(
+		HeroMoveDirection.X, 
+		-Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), 
+		Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle)
+	);
 }
 
 void AMainCharacterPawn::MoveHero() {
+	Camera->SetFOVStatus(NeedZoom() ? CameraFOV_Zoomed : CameraFOV_Normal);
 	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
+	
 	HeroMoveDirection = FVector(0, 0, 0);
 }
 
@@ -162,6 +172,26 @@ void AMainCharacterPawn::UpdateHeroIsMoving()
 	FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
+}
+
+bool AMainCharacterPawn::NeedZoom()
+{
+	
+	FRectangle BackgroundRectangle = Camera->ActualBackgroundRectangle;
+
+	UE_LOG(LogTemp, Warning, TEXT("Highest point: %f"), (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4);
+	UE_LOG(LogTemp, Warning, TEXT("Lowest point: %f"), (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4);
+	UE_LOG(LogTemp, Warning, TEXT("Hero is on %f by z"), HeroSprite->GetComponentLocation().Z);
+	UE_LOG(LogTemp, Warning, TEXT("____________________________________________________"));
+
+
+	bool Result = ((HeroSprite->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
+		(HeroSprite->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
+	int ResultInInt = Result ? 1 : 0;
+
+	UE_LOG(LogTemp, Warning, TEXT("Result %d"), ResultInInt);
+
+	return Result;
 }
 
 void AMainCharacterPawn::UseItem(UItem *Item) 

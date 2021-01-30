@@ -82,6 +82,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		UTexture2D* BackgroundImage;
 
+	FRectangle ActualBackgroundRectangle;
 	
 	void SetFOVStatus(CameraZoomStatus Status);
 	
@@ -116,12 +117,9 @@ private:
 	float ActualBackgroundWidth = 0.f;
 	float ActualBackgroundHeight = 0.f;
 
-	FRectangle ActualBackgroundRectangle;
 	FVector ActualBackGroundCenter = FVector(0.f, 0.f, 0.f);
 
 	void UpdateCurrentShowingRectangle();
-
-	
 
 	FRectangle CurrentShowingPlaneRectangle;
 

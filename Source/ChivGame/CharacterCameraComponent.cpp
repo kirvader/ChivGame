@@ -10,13 +10,8 @@
 void UCharacterCameraComponent::SetFOVStatus(CameraZoomStatus Status)
 {
 	CurrentFOVStatus = Status;
-	switch (CurrentFOVStatus)
-	{
-		case CameraFOV_Normal:
-			TargetFOV = NormalFOV;
-		case CameraFOV_Zoomed:
-			TargetFOV = ZoomedFOV;
-	}
+	if (CurrentFOVStatus == CameraFOV_Normal) TargetFOV = NormalFOV;
+	if (CurrentFOVStatus == CameraFOV_Zoomed) TargetFOV = ZoomedFOV;
 }
 
 void UCharacterCameraComponent::BeginPlay()
@@ -59,13 +54,14 @@ FVector UCharacterCameraComponent::GetAxisOffset(FVector TargetPosition)
 	FVector CurrentPosition = GetComponentLocation();
 
 	FVector PositionOffset = (TargetPosition - CurrentPosition) * CameraLag;
-	PositionOffset.Y = -PositionOffset.Z * sin(CameraDirectionPlaneAngle * acos(-1) / 180.f);
+	PositionOffset.Y = 0.f;
 
 	return PositionOffset;
 }
 
 float UCharacterCameraComponent::GetNextMomentFOV()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Next moment FOV is %f"), FieldOfView + (TargetFOV - FieldOfView) * CameraLagFOV);
 	return FieldOfView + (TargetFOV - FieldOfView) * CameraLagFOV;
 }
 
