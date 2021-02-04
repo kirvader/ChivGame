@@ -32,26 +32,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* HeroStaticMesh;
 
-	// Метод вычисляющий нужное смещение камеры по горизонтали относительно текущего положения в соответствии с вводом игрока
-	void CalculateCameraMoveLeftRightInput();
-
 	// Метод вычисляющий нужное смещение игрока по горизонтали относительно текущего положения в соответствии с вводом игрока
 	void CalculateMoveLeftRightInput(float Value);
-
-	// Метод вычисляющий нужное приближение камеры в соответствии с вводом игрока
-	void CalculateCameraFOVAndZoom();
 	
 	// Метод вычисляющий нужное смещение игрока по вертикали относительно текущего положения в соответствии с вводом игрокаvoid CalculateCameraMoveLeftRightInput();
 	void CalculateMoveUpDownInput(float Value);
-
-	// Метод, который приближает камеру
-	void ZoomCamera();
-
+	
 	// Метод, который двигает героя в соответствии с вводом игрока
 	void MoveHero();
-
-	// Метод, который двигает камеру в соответствии с движением игрока
-	void MoveCamera();
 
 	// Метод, отвечающий на вопрос двигается ли игрок
 	void UpdateHeroIsMoving();
@@ -132,11 +120,13 @@ public:
 	
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	TSet<ABaseInteractable*> CurrentInteractableActors;
+	ABaseInteractable* CurrentInteractableActor;
 
-	void AddInteractableActor(ABaseInteractable* ActorRef);
+	void SetInteractableActor(ABaseInteractable* ActorRef);
 
-	void RemoveInteractableActor(ABaseInteractable* ActorRef);
+	void RemoveInteractableActor();
+
+	void OnDefaultAction();
 	
 	// Вызывается при попытке взаимодействовать со статичным объектом на земле
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
@@ -144,15 +134,14 @@ public:
 
 	// Вызывается при попытке подобрать элемент с земли
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	void PickUpItem(ABaseInteractable* PickupAbleItem);
+		void UpdateActiveItem();
+
 
 	// Текущее хп героя
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health = 60.f;
 	
-	// Вызывается при попытке использовать предмет из инвентаря
-	UFUNCTION(BlueprintCallable, Category = "Items")
-	void UseItem(UItem *Item);
+	
 
 	// Указатель на инвентарь игрока
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

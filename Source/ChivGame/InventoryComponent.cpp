@@ -2,7 +2,7 @@
 
 
 #include "InventoryComponent.h"
-#include "ChivGame/Item.h"
+#include "ChivGame/PickupableItem.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -13,7 +13,7 @@ UInventoryComponent::UInventoryComponent()
 	// ...
 }
 
-bool UInventoryComponent::AddItem(UItem *Item) 
+bool UInventoryComponent::AddItem(APickupableItem* Item)
 {
 	
 	if (Item == nullptr || Items.Num() >= Capacity) {
@@ -22,7 +22,7 @@ bool UInventoryComponent::AddItem(UItem *Item)
 	}
 	// setting up an item
 	Item->OwningInventory = this;
-	Item->World = GetWorld();
+	//Item->World = GetWorld();
 	
 	// adding item to inventory
 	if (CurrentItem == nullptr) {
@@ -35,13 +35,14 @@ bool UInventoryComponent::AddItem(UItem *Item)
 	else {
 		// if there were some items
 		UE_LOG(LogTemp, Warning, TEXT("size is not zero"));
-		UItem *NextItem = CurrentItem->NextInInventory;
+		APickupableItem*NextItem = CurrentItem->NextInInventory;
 		Item->NextInInventory = NextItem;
 		CurrentItem->NextInInventory = Item;
 		Item->PrevInInventory = CurrentItem;
 		NextItem->PrevInInventory = Item;
 	}
 	CurrentItem = Item;
+	UE_LOG(LogTemp, Warning, TEXT("Current item name = %s"), *(CurrentItem->ItemDisplayName));
 
 	// just to easier explanation
 	// can be deleted
@@ -50,16 +51,16 @@ bool UInventoryComponent::AddItem(UItem *Item)
 	return true;
 }
 
-bool UInventoryComponent::RemoveItem(UItem *Item) 
+bool UInventoryComponent::RemoveItem(APickupableItem* Item)
 {
 	if (Item) {
 		// setting up an item
 		Item->OwningInventory = nullptr;
-		Item->World = nullptr;
+		//Item->World = nullptr;
 
 		// removing an item from inventory
-		UItem *NextItem = Item->NextInInventory;
-		UItem *PrevItem = Item->PrevInInventory;
+		APickupableItem*NextItem = Item->NextInInventory;
+		APickupableItem*PrevItem = Item->PrevInInventory;
 		
 		if (NextItem == nullptr) {
 			// if an item is not in the inventory
@@ -92,29 +93,12 @@ void UInventoryComponent::SwitchToNextItem()
 }
 
 
-
-void UInventoryComponent::AddDefaults()
-{
-	for (TSubclassOf<UItem> item : DefaultItems) {
-		if (!item->IsValidLowLevel()) continue;
-
-		UItem* ConvertedItem = NewObject<UItem>(this, item->GetFName(), RF_NoFlags, item.GetDefaultObject());
-		/*FString converted = item->ItemDisplayName;*/
-		// UE_LOG(LogTemp, Warning, TEXT("lol\n"));
-
-		AddItem(ConvertedItem);
-	} // adding default items
-}
-
-
-
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
 	
 	Super::BeginPlay();
 	// ...
-	AddDefaults();
 	
 	
 	/*
