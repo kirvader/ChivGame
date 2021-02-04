@@ -1,3 +1,4 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -19,11 +20,7 @@ ABaseInteractable::ABaseInteractable()
 	ItemSprite = CreateDefaultSubobject<UPaperSpriteComponent>(FName("Item Sprite"));
 	ItemSprite->SetupAttachment(RootComponent);
 	SetupShapeComponent();
-
-	Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
-	Widget->SetupAttachment(RootComponent);
-	Widget->SetVisibility(false);
-	Widget->SetRelativeLocation(Widget->GetRelativeVector());
+	
 }
 
 void ABaseInteractable::SetupShapeComponent()
@@ -69,8 +66,7 @@ void ABaseInteractable::OnTriggerOverlapBegin
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
-		CastedActor->AddInteractableActor(this);
-		ItemSprite->SetMaterial(0, ShimmeryMaterial);
+		CastedActor->SetInteractableActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}
@@ -93,9 +89,8 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
 		
-		CastedActor->RemoveInteractableActor(this);
+		CastedActor->RemoveInteractableActor();
 		ItemSprite->SetMaterial(0, NULL);
-		Widget->SetVisibility(false);
 		CastedActor->SetNormalFOV();
 		
 		TriggerOverlapEndEvent.Broadcast();
@@ -111,12 +106,15 @@ void ABaseInteractable::TriggerCallbackOff()
 		TEXT("SimpleTriggerVolume::TriggerCallbackOff(). To add functionality, override this function."));
 }
 
+void ABaseInteractable::DefaultAction(AMainCharacterPawn* ActingPlayer)
+{
+}
+
 
 // Called when the game starts or when spawned
 void ABaseInteractable::BeginPlay()
 {
 	Super::BeginPlay();
-	if (ItemInInventory != nullptr) CastedItemInInventory = NewObject<UItem>(ItemInInventory, ItemInInventory->GetFName(), RF_NoFlags, ItemInInventory.GetDefaultObject()); // преобразование полученного предмета к используемому виду
 	BindTriggerCallbacksToTriggerShape();
 }
 

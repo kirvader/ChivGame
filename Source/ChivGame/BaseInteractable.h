@@ -11,6 +11,7 @@ class UMaterialInterface;
 class UPaperSpriteComponent;
 class UShapeComponent;
 class UItem;
+class AMainCharacterPawn;
 
 UCLASS(Abstract)
 class CHIVGAME_API ABaseInteractable : public AActor
@@ -21,10 +22,6 @@ public:
 	// Sets default values for this actor's properties
 	ABaseInteractable();
 
-	// Кастованный предмет, который добавят в инвентарь
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	UItem* CastedItemInInventory = nullptr;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,15 +30,7 @@ private:
 	// Функция, устанавливающая область триггера
 	void SetupShapeComponent();
 
-public:	
-	// Тестовая надпись
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
-	FString TestingString = "lol, that's working";
-
-	// Блупринтовый ввод предмета инвентаря. nullptr если не поднимается
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
-	TSubclassOf<UItem> ItemInInventory = nullptr;
-
+public:
 	// Спрайт элемента в мире. nullptr если не нужен
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UPaperSpriteComponent* ItemSprite = nullptr;
@@ -49,19 +38,6 @@ public:
 	// область в которой объект поднимаем
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		UShapeComponent* TriggerShape = nullptr;
-
-	/**
-	 * Material attached to sprite
-	 * Great example on https://github.com/Harrison1/unrealcpp/tree/master/ChangeMaterialMesh
-	 * Example of creating shimmering materials showed here: https://www.youtube.com/watch?v=gDa5E1ndGG8
-	 */
-	// Shimmering shader
-	UPROPERTY(EditAnywhere, Category = "Setup")
-		UMaterialInterface* ShimmeryMaterial = nullptr;
-
-	// Menu widget 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
-		UInteractiveItemWidgetComponent* Widget = nullptr;
 
 	// Метод вызывающийся при входе кого-то в триггер
 	UFUNCTION()
@@ -107,6 +83,8 @@ public:
 		called. Override to add functionality. */
 	UFUNCTION()
 		virtual void TriggerCallbackOff();
+
+	virtual void DefaultAction(AMainCharacterPawn* ActingPlayer);
 
 
 	DECLARE_EVENT(ASimpleTriggerVolume, FSimpleTriggerVolumeEvent)
