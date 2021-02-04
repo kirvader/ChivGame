@@ -1,3 +1,4 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -20,10 +21,11 @@ ABaseInteractable::ABaseInteractable()
 	ItemSprite->SetupAttachment(RootComponent);
 	SetupShapeComponent();
 
-	Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
-	Widget->SetupAttachment(ItemSprite);
-	Widget->SetVisibility(false);
-	Widget->SetRelativeLocation(Widget->GetRelativeVector());
+	//Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
+	//Widget->SetupAttachment(ItemSprite);
+	//Widget->SetVisibility(false);
+	//Widget->SetRelativeLocation(Widget->GetRelativeVector());
+
 }
 
 void ABaseInteractable::SetupShapeComponent()
@@ -69,13 +71,13 @@ void ABaseInteractable::OnTriggerOverlapBegin
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
-		
-		CastedActor->AddInteractableActor(this);
-		ItemSprite->SetMaterial(0, ShimmeryMaterial);
-		Widget->SetVisibility(true);
-		UE_LOG(LogTemp, Warning,
-			TEXT("Item should had been added"));
 
+		//ItemSprite->SetMaterial(0, ShimmeryMaterial);
+		//Widget->SetVisibility(true);
+		//UE_LOG(LogTemp, Warning,
+		//	TEXT("Item should had been added"));
+
+		CastedActor->SetInteractableActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
 	}
@@ -98,9 +100,11 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
 		
-		CastedActor->RemoveInteractableActor(this);
+		CastedActor->RemoveInteractableActor();
 		ItemSprite->SetMaterial(0, NULL);
-		Widget->SetVisibility(false);
+
+		//Widget->SetVisibility(false);
+		//CastedActor->SetNormalFOV();
 		
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
@@ -115,12 +119,15 @@ void ABaseInteractable::TriggerCallbackOff()
 		TEXT("SimpleTriggerVolume::TriggerCallbackOff(). To add functionality, override this function."));
 }
 
+void ABaseInteractable::DefaultAction(AMainCharacterPawn* ActingPlayer)
+{
+}
+
 
 // Called when the game starts or when spawned
 void ABaseInteractable::BeginPlay()
 {
 	Super::BeginPlay();
-	if (ItemInInventory != nullptr) CastedItemInInventory = NewObject<UItem>(ItemInInventory, ItemInInventory->GetFName(), RF_NoFlags, ItemInInventory.GetDefaultObject()); // преобразование полученного предмета к используемому виду
 	BindTriggerCallbacksToTriggerShape();
 }
 

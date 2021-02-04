@@ -88,13 +88,14 @@ public:
 	
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	TSet<ABaseInteractable*> CurrentInteractableActors;
-	
-	UFUNCTION(BlueprintCallable)
-	void AddInteractableActor(ABaseInteractable* ActorRef);
 
-	UFUNCTION(BlueprintCallable)
-	void RemoveInteractableActor(ABaseInteractable* ActorRef);
+	ABaseInteractable* CurrentInteractableActor;
+
+	void SetInteractableActor(ABaseInteractable* ActorRef);
+
+	void RemoveInteractableActor();
+
+	void OnDefaultAction();
 	
 	// Вызывается при попытке взаимодействовать со статичным объектом на земле
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
@@ -102,15 +103,14 @@ public:
 
 	// Вызывается при попытке подобрать элемент с земли
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-	void PickUpItem(ABaseInteractable* PickupAbleItem);
+		void UpdateActiveItem();
+
 
 	// Текущее хп героя
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health = 60.f;
 	
-	// Вызывается при попытке использовать предмет из инвентаря
-	UFUNCTION(BlueprintCallable, Category = "Items")
-	void UseItem(UItem *Item);
+	
 
 	// Указатель на инвентарь игрока
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

@@ -18,16 +18,6 @@
 #include "BaseInteractable.h"
 #include <algorithm>
 
-namespace {
-	ABaseInteractable* GetFirstElement(AMainCharacterPawn* CurrentCharacter) {
-		for (auto Element : CurrentCharacter->CurrentInteractableActors)
-		{
-			return Element;
-		}
-		return nullptr;
-	}
-}
-
 
 
 // Sets default values
@@ -59,10 +49,6 @@ void AMainCharacterPawn::BeginPlay()
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
 }
 
-void AMainCharacterPawn::OnInteract()
-{
-}
-
 void AMainCharacterPawn::SwitchItem() 
 {
 	if (Inventory->CurrentItem == nullptr) return;
@@ -71,18 +57,8 @@ void AMainCharacterPawn::SwitchItem()
 
 void AMainCharacterPawn::OnPickUpItemCall()
 {
-	/*if (CurrentInteractiveItem == nullptr) return;
 	
-	CurrentInteractiveItem->SetActorHiddenInGame(true);
-
-	AInteractableItem* CastedItem = Cast<AInteractableItem>(CurrentInteractiveItem);
-	if (CastedItem == nullptr) return;
-	
-	
-	Inventory->AddItem(CastedItem->CastedItemInInventory);*/
 }
-
-
 
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
@@ -103,7 +79,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
 
 
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnInteract);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnDefaultAction);
 	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
 
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
@@ -111,21 +87,24 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 }
 
 
-void AMainCharacterPawn::RemoveInteractableActor(ABaseInteractable* ActorRef)
+void AMainCharacterPawn::RemoveInteractableActor()
 {
-	CurrentInteractableActors.Remove(ActorRef);
+	CurrentInteractableActor = nullptr;
 }
 
-void AMainCharacterPawn::AddInteractableActor(ABaseInteractable* ActorRef)
+void AMainCharacterPawn::OnDefaultAction()
 {
-	if (ActorRef == nullptr || ActorRef->IsHidden()) {
-		UE_LOG(LogTemp, Warning,
-			TEXT("Added action is null or hidden"));
-		return;
-	}
-	UE_LOG(LogTemp, Warning,
-		TEXT("Added action is not null"));
-	CurrentInteractableActors.Add(ActorRef);
+
+
+	if (CurrentInteractableActor == nullptr) return;
+
+	CurrentInteractableActor->DefaultAction(this);
+	UpdateActiveItem();
+}
+
+void AMainCharacterPawn::SetInteractableActor(ABaseInteractable* ActorRef)
+{
+	CurrentInteractableActor = ActorRef;
 }
 
 void AMainCharacterPawn::InteractTable_Implementation(ABaseInteractable* InteractableThing)
@@ -133,11 +112,10 @@ void AMainCharacterPawn::InteractTable_Implementation(ABaseInteractable* Interac
 
 }
 
-void AMainCharacterPawn::PickUpItem_Implementation(ABaseInteractable* PickupAbleItem)
+void AMainCharacterPawn::UpdateActiveItem_Implementation()
 {
 	
 }
-
 
 
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
@@ -173,6 +151,7 @@ void AMainCharacterPawn::UpdateHeroIsMoving()
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
 }
+
 
 bool AMainCharacterPawn::NeedZoom()
 {
