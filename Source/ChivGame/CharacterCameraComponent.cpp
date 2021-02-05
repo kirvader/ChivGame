@@ -27,7 +27,7 @@ void UCharacterCameraComponent::BeginPlay()
 
 		if (!Casted) continue;
 		FVector BackgroundScale = Casted->GetActorScale();
-
+		
 		ActualBackgroundWidth = BackgroundScale.X * BackgroundImage->GetSurfaceWidth();
 		ActualBackgroundHeight = BackgroundScale.Z * BackgroundImage->GetSurfaceHeight();
 		ActualBackGroundCenter = Casted->GetActorLocation();

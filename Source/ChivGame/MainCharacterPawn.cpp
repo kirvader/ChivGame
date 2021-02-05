@@ -173,10 +173,3 @@ bool AMainCharacterPawn::NeedZoom()
 	return Result;
 }
 
-void AMainCharacterPawn::UseItem(UItem *Item) 
-{
-	if (Item) {
-		Item->Use(this);
-		Item->OnUse(this);
-	}
-}

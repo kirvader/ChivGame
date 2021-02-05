@@ -21,7 +21,7 @@ void UInteractiveItemWidgetComponent::InitWidget()
 		{
 			WidgetInst->SetOwningActor(GetOwner());
 		}
-		WidgetInst->ObjectName = Cast<ABaseInteractable>(GetOwner())->ActionText;
+		//WidgetInst->ObjectName = Cast<ABaseInteractable>(GetOwner())->ActionText;
 	}
 }
 
