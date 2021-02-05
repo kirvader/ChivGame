@@ -13,19 +13,12 @@
 #include "InventoryComponent.h"
 #include "BaseInteractiveThing.h"
 #include "InteractiveItemWidgetComponent.h"
+#include "CharacterCameraComponent.h"
 #include "InteractableItem.h"
 #include "BaseInteractable.h"
 #include <algorithm>
 
-void AMainCharacterPawn::SetNormalFOV()
-{
-	TargetCameraFOV = NormalFOV;
-}
 
-void AMainCharacterPawn::SetZoomedFOV()
-{
-	TargetCameraFOV = ZoomedFOV;
-}
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -40,7 +33,7 @@ AMainCharacterPawn::AMainCharacterPawn()
 	HeroSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HeroSprite"));
 	HeroSprite->SetupAttachment(RootComponent);
 
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera = CreateDefaultSubobject<UCharacterCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
@@ -51,9 +44,10 @@ AMainCharacterPawn::AMainCharacterPawn()
 void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Camera->UpdateBackgroundSpriteRange();
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
 }
-
 
 void AMainCharacterPawn::SwitchItem() 
 {
@@ -66,17 +60,14 @@ void AMainCharacterPawn::OnPickUpItemCall()
 	
 }
 
-void AMainCharacterPawn::CallWidget()
-{
-	
-}
-
 // Called every frame
 void AMainCharacterPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateHeroIsMoving();
 	MoveHero();
+	Camera->MoveTo(HeroSprite->GetComponentLocation());
+	Camera->UpdateZoom();
 	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
 
@@ -87,7 +78,6 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
 
-	PlayerInputComponent->BindAction("CallWidget", IE_Pressed, this, &AMainCharacterPawn::CallWidget);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnDefaultAction);
 	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
@@ -104,6 +94,8 @@ void AMainCharacterPawn::RemoveInteractableActor()
 
 void AMainCharacterPawn::OnDefaultAction()
 {
+
+
 	if (CurrentInteractableActor == nullptr) return;
 
 	CurrentInteractableActor->DefaultAction(this);
@@ -125,19 +117,30 @@ void AMainCharacterPawn::UpdateActiveItem_Implementation()
 	
 }
 
+
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
-    HeroMoveDirection = FVector(Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, HeroMoveDirection.Y, HeroMoveDirection.Z);
+    HeroMoveDirection = FVector(
+		Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 
+		HeroMoveDirection.Y, 
+		HeroMoveDirection.Z
+	);
 	
 }
 
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
-    HeroMoveDirection = FVector(HeroMoveDirection.X, -Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle));
+    HeroMoveDirection = FVector(
+		HeroMoveDirection.X, 
+		-Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), 
+		Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle)
+	);
 }
 
 void AMainCharacterPawn::MoveHero() {
+	Camera->SetFOVStatus(NeedZoom() ? CameraFOV_Zoomed : CameraFOV_Normal);
 	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
+	
 	HeroMoveDirection = FVector(0, 0, 0);
 }
 
@@ -148,3 +151,25 @@ void AMainCharacterPawn::UpdateHeroIsMoving()
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
 }
+
+
+bool AMainCharacterPawn::NeedZoom()
+{
+	
+	FRectangle BackgroundRectangle = Camera->ActualBackgroundRectangle;
+
+	UE_LOG(LogTemp, Warning, TEXT("Highest point: %f"), (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4);
+	UE_LOG(LogTemp, Warning, TEXT("Lowest point: %f"), (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4);
+	UE_LOG(LogTemp, Warning, TEXT("Hero is on %f by z"), HeroSprite->GetComponentLocation().Z);
+	UE_LOG(LogTemp, Warning, TEXT("____________________________________________________"));
+
+
+	bool Result = ((HeroSprite->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
+		(HeroSprite->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
+	int ResultInInt = Result ? 1 : 0;
+
+	UE_LOG(LogTemp, Warning, TEXT("Result %d"), ResultInInt);
+
+	return Result;
+}
+

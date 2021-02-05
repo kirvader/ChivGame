@@ -20,7 +20,12 @@ ABaseInteractable::ABaseInteractable()
 	ItemSprite = CreateDefaultSubobject<UPaperSpriteComponent>(FName("Item Sprite"));
 	ItemSprite->SetupAttachment(RootComponent);
 	SetupShapeComponent();
-	
+
+	//Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
+	//Widget->SetupAttachment(ItemSprite);
+	//Widget->SetVisibility(false);
+	//Widget->SetRelativeLocation(Widget->GetRelativeVector());
+
 }
 
 void ABaseInteractable::SetupShapeComponent()
@@ -66,6 +71,12 @@ void ABaseInteractable::OnTriggerOverlapBegin
 	{
 		AMainCharacterPawn* CastedActor = Cast<AMainCharacterPawn>(OtherActor);
 		if (!CastedActor) return;
+
+		//ItemSprite->SetMaterial(0, ShimmeryMaterial);
+		//Widget->SetVisibility(true);
+		//UE_LOG(LogTemp, Warning,
+		//	TEXT("Item should had been added"));
+
 		CastedActor->SetInteractableActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
 		TriggerCallbackOn();
@@ -91,7 +102,9 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		
 		CastedActor->RemoveInteractableActor();
 		ItemSprite->SetMaterial(0, NULL);
-		CastedActor->SetNormalFOV();
+
+		//Widget->SetVisibility(false);
+		//CastedActor->SetNormalFOV();
 		
 		TriggerOverlapEndEvent.Broadcast();
 		TriggerCallbackOff();
