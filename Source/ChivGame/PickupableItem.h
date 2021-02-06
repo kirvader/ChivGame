@@ -23,8 +23,7 @@ public:
 
 	virtual void DefaultAction(AMainCharacterPawn* ActingPlayer) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-		FString UseActionText;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		UStaticMesh* PickupMesh;
@@ -32,11 +31,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		UTexture2D* InventoryImage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-		FString ItemDisplayName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-		FString ItemDescription;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 		float Weight;

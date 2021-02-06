@@ -7,6 +7,15 @@
 
 #include <Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 
+float UCharacterCameraComponent::Max(float value1, float value2)
+{
+	return value1 > value2 ? value1 : value2;
+}
+
+float UCharacterCameraComponent::Min(float value1, float value2)
+{
+	return value1 < value2 ? value1 : value2;
+}
 void UCharacterCameraComponent::SetFOVStatus(CameraZoomStatus Status)
 {
 	CurrentFOVStatus = Status;
@@ -54,26 +63,20 @@ FVector UCharacterCameraComponent::GetAxisOffset(FVector TargetPosition)
 	FVector CurrentPosition = GetComponentLocation();
 
 	FVector PositionOffset = (TargetPosition - CurrentPosition) * CameraLag;
-	PositionOffset.Y = 0.f;
+	if (CameraPrototypeID >= 2)
+		PositionOffset.Y = 0.f;
+	else
+		PositionOffset.Y = PositionOffset.Z * cos(CameraDirectionPlaneAngle * acos(-1) / 180.f);
 
 	return PositionOffset;
 }
 
 float UCharacterCameraComponent::GetNextMomentFOV()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Next moment FOV is %f"), FieldOfView + (TargetFOV - FieldOfView) * CameraLagFOV);
+	//UE_LOG(LogTemp, Warning, TEXT("Next moment FOV is %f"), FieldOfView + (TargetFOV - FieldOfView) * CameraLagFOV);
 	return FieldOfView + (TargetFOV - FieldOfView) * CameraLagFOV;
 }
 
-float UCharacterCameraComponent::Max(float value1, float value2)
-{
-	return value1 > value2 ? value1 : value2;
-}
-
-float UCharacterCameraComponent::Min(float value1, float value2)
-{
-	return value1 < value2 ? value1 : value2;
-}
 
 void UCharacterCameraComponent::UpdateCurrentShowingRectangle()
 {
@@ -107,8 +110,8 @@ void UCharacterCameraComponent::MoveTo(FVector TargetPosition) {
 	float BackgroundHeight = abs(ActualBackgroundRectangle.Highest - ActualBackgroundRectangle.Lowest);
 	float ShowingHeight = abs(CurrentShowingPlaneRectangle.Highest - CurrentShowingPlaneRectangle.Lowest);
 
-	UE_LOG(LogTemp, Warning, TEXT("background is %f %f"), BackgroundWidth, BackgroundHeight);
-	UE_LOG(LogTemp, Warning, TEXT("Showing is %f %f"), ShowingWidth, ShowingHeight);
+	/*UE_LOG(LogTemp, Warning, TEXT("background is %f %f"), BackgroundWidth, BackgroundHeight);
+	UE_LOG(LogTemp, Warning, TEXT("Showing is %f %f"), ShowingWidth, ShowingHeight);*/
 	// по оси X(горизонталь)
 	if (BackgroundWidth <= ShowingWidth) {
 		// Если по горизонтали размер задника таков, что может поместиться в камеру с запасом

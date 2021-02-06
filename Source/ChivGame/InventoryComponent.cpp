@@ -27,15 +27,15 @@ bool UInventoryComponent::AddItem(APickupableItem* Item)
 	// adding item to inventory
 	if (CurrentItem == nullptr) {
 		// if there were not any items
-		UE_LOG(LogTemp, Warning, TEXT("size is zero"));
+		// UE_LOG(LogTemp, Warning, TEXT("size is zero"));
 
 		Item->NextInInventory = Item;
 		Item->PrevInInventory = Item;
 	}
 	else {
 		// if there were some items
-		UE_LOG(LogTemp, Warning, TEXT("size is not zero"));
-		APickupableItem*NextItem = CurrentItem->NextInInventory;
+		// UE_LOG(LogTemp, Warning, TEXT("size is not zero"));
+		APickupableItem* NextItem = CurrentItem->NextInInventory;
 		Item->NextInInventory = NextItem;
 		CurrentItem->NextInInventory = Item;
 		Item->PrevInInventory = CurrentItem;
@@ -59,8 +59,8 @@ bool UInventoryComponent::RemoveItem(APickupableItem* Item)
 		//Item->World = nullptr;
 
 		// removing an item from inventory
-		APickupableItem*NextItem = Item->NextInInventory;
-		APickupableItem*PrevItem = Item->PrevInInventory;
+		APickupableItem* NextItem = Item->NextInInventory;
+		APickupableItem* PrevItem = Item->PrevInInventory;
 		
 		if (NextItem == nullptr) {
 			// if an item is not in the inventory

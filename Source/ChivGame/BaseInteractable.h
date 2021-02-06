@@ -31,6 +31,16 @@ private:
 	void SetupShapeComponent();
 
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
+		FString UseActionText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
+		FString ItemDisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
+		FString ItemDescription;
+
 	// Спрайт элемента в мире. nullptr если не нужен
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UPaperSpriteComponent* ItemSprite = nullptr;

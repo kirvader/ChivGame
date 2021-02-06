@@ -64,6 +64,7 @@ void ABaseInteractable::OnTriggerOverlapBegin
 ) {
 	// Prevent self collision and check if only collision
 	// to specific actor is wanted.
+	if (IsHidden()) return;
 	if (OtherActor &&
 		(OtherActor != this) &&
 		(OtherActor == ActorThatTriggers ||
@@ -74,8 +75,7 @@ void ABaseInteractable::OnTriggerOverlapBegin
 
 		//ItemSprite->SetMaterial(0, ShimmeryMaterial);
 		//Widget->SetVisibility(true);
-		//UE_LOG(LogTemp, Warning,
-		//	TEXT("Item should had been added"));
+		
 
 		CastedActor->SetInteractableActor(this);
 		TriggerOverlapBeginEvent.Broadcast();
@@ -92,6 +92,7 @@ void ABaseInteractable::OnTriggerOverlapEnd
 ) {
 	// Prevent self collision and check if only collision
 	// to specific actor is wanted.
+	if (IsHidden()) return;
 	if (OtherActor &&
 		(OtherActor != this) &&
 		(OtherActor == ActorThatTriggers ||
@@ -102,6 +103,9 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		
 		CastedActor->RemoveInteractableActor();
 		ItemSprite->SetMaterial(0, NULL);
+		
+		UE_LOG(LogTemp, Warning,
+			TEXT("on trigger overlap end"));
 
 		//Widget->SetVisibility(false);
 		//CastedActor->SetNormalFOV();

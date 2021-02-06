@@ -89,6 +89,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AMainCharacterPawn::RemoveInteractableActor()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Nobody is current pickupable!"));
 	CurrentInteractableActor = nullptr;
 }
 
@@ -104,6 +105,8 @@ void AMainCharacterPawn::OnDefaultAction()
 
 void AMainCharacterPawn::SetInteractableActor(ABaseInteractable* ActorRef)
 {
+	if (ActorRef->IsHidden()) return;
+	UE_LOG(LogTemp, Warning, TEXT("Somebody is current pickupable!"));
 	CurrentInteractableActor = ActorRef;
 }
 
@@ -147,7 +150,7 @@ void AMainCharacterPawn::MoveHero() {
 void AMainCharacterPawn::UpdateHeroIsMoving() 
 {
 	PlayerIsMoving = HeroMoveDirection.Size() > 0.1;
-	FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
+	// FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
 }
@@ -158,18 +161,13 @@ bool AMainCharacterPawn::NeedZoom()
 	
 	FRectangle BackgroundRectangle = Camera->ActualBackgroundRectangle;
 
-	UE_LOG(LogTemp, Warning, TEXT("Highest point: %f"), (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4);
-	UE_LOG(LogTemp, Warning, TEXT("Lowest point: %f"), (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4);
-	UE_LOG(LogTemp, Warning, TEXT("Hero is on %f by z"), HeroSprite->GetComponentLocation().Z);
-	UE_LOG(LogTemp, Warning, TEXT("____________________________________________________"));
-
-
+	
 	bool Result = ((HeroSprite->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
 		(HeroSprite->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
-	int ResultInInt = Result ? 1 : 0;
-
-	UE_LOG(LogTemp, Warning, TEXT("Result %d"), ResultInInt);
-
-	return Result;
+	
+	
+	if (Camera->CameraPrototypeID == 2) return Result;
+	if (Camera->CameraPrototypeID == 3) return !Result;
+	return false;
 }
 

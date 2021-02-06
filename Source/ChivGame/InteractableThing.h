@@ -20,15 +20,6 @@ public:
 
 	virtual void DefaultAction(AMainCharacterPawn* ActingPlayer) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-		FString UseActionText;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-		FString ItemDisplayName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
-		FString ItemDescription;
-
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
 	void InteractiveAction();
 

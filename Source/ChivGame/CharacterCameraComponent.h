@@ -62,6 +62,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		float CameraLag = 0.6f;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		int CameraPrototypeID = 1;
+
 	// Приближенный угол обзора камеры(когда игрок взаимодействует)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		float ZoomedFOV = 70.f;

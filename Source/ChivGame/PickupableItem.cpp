@@ -11,7 +11,9 @@ APickupableItem::APickupableItem() {
 void APickupableItem::DefaultAction(AMainCharacterPawn* ActingPlayer) {
 	// as lazy as that is but default action is to pick it up to inventory
 
-	ActingPlayer->Inventory->AddItem(this);
-	SetActorHiddenInGame(true);
+	if (ActingPlayer->Inventory->AddItem(this)) {
+		SetActorHiddenInGame(true);
+		ActingPlayer->RemoveInteractableActor();
+	}
 	
 }
