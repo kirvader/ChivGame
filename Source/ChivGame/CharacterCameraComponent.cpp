@@ -49,11 +49,9 @@ void UCharacterCameraComponent::BeginPlay()
 
 FVector2D UCharacterCameraComponent::GetGameResolution()
 {
-	FVector2D Result = FVector2D(1, 1);
+	FVector2D Result = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 
-	Result.X = GSystemResolution.ResX;
-	Result.Y = GSystemResolution.ResY;
-
+	UE_LOG(LogTemp, Warning, TEXT("Resolution is %fx%f"), Result.X, Result.Y);
 	return Result;
 }
 
@@ -110,8 +108,8 @@ void UCharacterCameraComponent::MoveTo(FVector TargetPosition) {
 	float BackgroundHeight = abs(ActualBackgroundRectangle.Highest - ActualBackgroundRectangle.Lowest);
 	float ShowingHeight = abs(CurrentShowingPlaneRectangle.Highest - CurrentShowingPlaneRectangle.Lowest);
 
-	/*UE_LOG(LogTemp, Warning, TEXT("background is %f %f"), BackgroundWidth, BackgroundHeight);
-	UE_LOG(LogTemp, Warning, TEXT("Showing is %f %f"), ShowingWidth, ShowingHeight);*/
+	/*UE_LOG(LogTemp, Warning, TEXT("background is %f %f"), BackgroundWidth, BackgroundHeight);*/
+	UE_LOG(LogTemp, Warning, TEXT("Showing is %f %f"), ShowingWidth, ShowingHeight);
 	// по оси X(горизонталь)
 	if (BackgroundWidth <= ShowingWidth) {
 		// Если по горизонтали размер задника таков, что может поместиться в камеру с запасом

@@ -42,7 +42,7 @@ bool UInventoryComponent::AddItem(APickupableItem* Item)
 		NextItem->PrevInInventory = Item;
 	}
 	CurrentItem = Item;
-	UE_LOG(LogTemp, Warning, TEXT("Current item name = %s"), *(CurrentItem->ItemDisplayName));
+	// UE_LOG(LogTemp, Warning, TEXT("Current item name = %s"), *(CurrentItem->ItemDisplayName));
 
 	// just to easier explanation
 	// can be deleted

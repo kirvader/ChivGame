@@ -89,7 +89,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AMainCharacterPawn::RemoveInteractableActor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Nobody is current pickupable!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Nobody is current pickupable!"));
 	CurrentInteractableActor = nullptr;
 }
 
@@ -106,7 +106,7 @@ void AMainCharacterPawn::OnDefaultAction()
 void AMainCharacterPawn::SetInteractableActor(ABaseInteractable* ActorRef)
 {
 	if (ActorRef->IsHidden()) return;
-	UE_LOG(LogTemp, Warning, TEXT("Somebody is current pickupable!"));
+	// UE_LOG(LogTemp, Warning, TEXT("Somebody is current pickupable!"));
 	CurrentInteractableActor = ActorRef;
 }
 

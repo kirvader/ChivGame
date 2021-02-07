@@ -104,8 +104,8 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		CastedActor->RemoveInteractableActor();
 		ItemSprite->SetMaterial(0, NULL);
 		
-		UE_LOG(LogTemp, Warning,
-			TEXT("on trigger overlap end"));
+		// UE_LOG(LogTemp, Warning,
+		// 	TEXT("on trigger overlap end"));
 
 		//Widget->SetVisibility(false);
 		//CastedActor->SetNormalFOV();
@@ -119,8 +119,8 @@ void ABaseInteractable::TriggerCallbackOn_Implementation() {}
 
 void ABaseInteractable::TriggerCallbackOff()
 {
-	UE_LOG(LogTemp, Warning,
-		TEXT("SimpleTriggerVolume::TriggerCallbackOff(). To add functionality, override this function."));
+	// UE_LOG(LogTemp, Warning,
+	// 	TEXT("SimpleTriggerVolume::TriggerCallbackOff(). To add functionality, override this function."));
 }
 
 void ABaseInteractable::DefaultAction(AMainCharacterPawn* ActingPlayer)
