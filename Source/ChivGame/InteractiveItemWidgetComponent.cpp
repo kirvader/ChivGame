@@ -11,21 +11,3 @@ UInteractiveItemWidgetComponent::UInteractiveItemWidgetComponent()
 	SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void UInteractiveItemWidgetComponent::InitWidget() 
-{
-	Super::InitWidget();
-	if (Super::GetWidget())
-	{
-		UInteractiveItemWidget* WidgetInst = Cast<UInteractiveItemWidget>(Super::GetWidget());
-		if (WidgetInst)
-		{
-			WidgetInst->SetOwningActor(GetOwner());
-		}
-		//WidgetInst->ObjectName = Cast<ABaseInteractable>(GetOwner())->ActionText;
-	}
-}
-
-FVector UInteractiveItemWidgetComponent::GetRelativeVector()
-{
-	return FVector(x, y, z);
-}

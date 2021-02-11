@@ -12,15 +12,13 @@ class UPaperSpriteComponent;
 class UShapeComponent;
 class UItem;
 class AMainCharacterPawn;
+class UBaseInteractableInfo;
+class UInteractableItemsInfoWidgetComp;
 
 UCLASS(Abstract)
 class CHIVGAME_API ABaseInteractable : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ABaseInteractable();
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,7 +28,12 @@ private:
 	// Функция, устанавливающая область триггера
 	void SetupShapeComponent();
 
-public:
+public:	
+	// Sets default values for this actor's properties
+	ABaseInteractable();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+		UInteractableItemsInfoWidgetComp* InfoWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextAbout")
 		FString UseActionText;

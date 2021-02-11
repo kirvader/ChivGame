@@ -8,6 +8,8 @@
 #include <ChivGame/Item.h>
 #include "Components/BoxComponent.h"
 #include "InteractiveItemWidgetComponent.h"
+#include "BaseInteractableInfo.h"
+#include "InteractableItemsInfoWidgetComp.h"
 
 // Sets default values
 ABaseInteractable::ABaseInteractable()
@@ -21,11 +23,9 @@ ABaseInteractable::ABaseInteractable()
 	ItemSprite->SetupAttachment(RootComponent);
 	SetupShapeComponent();
 
-	//Widget = CreateDefaultSubobject<UInteractiveItemWidgetComponent>(FName("Widget"));
-	//Widget->SetupAttachment(ItemSprite);
-	//Widget->SetVisibility(false);
-	//Widget->SetRelativeLocation(Widget->GetRelativeVector());
-
+	InfoWidget = CreateDefaultSubobject<UInteractableItemsInfoWidgetComp>(FName("Info widget"));
+	InfoWidget->SetupAttachment(ItemSprite);
+	InfoWidget->SetHiddenInGame(false);
 }
 
 void ABaseInteractable::SetupShapeComponent()
@@ -133,5 +133,6 @@ void ABaseInteractable::BeginPlay()
 {
 	Super::BeginPlay();
 	BindTriggerCallbacksToTriggerShape();
+	InfoWidget->ShowInfo();
 }
 

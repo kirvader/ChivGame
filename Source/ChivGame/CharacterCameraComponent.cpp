@@ -42,8 +42,8 @@ void UCharacterCameraComponent::BeginPlay()
 		ActualBackGroundCenter = Casted->GetActorLocation();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("width - %f, height - %f"), ActualBackgroundWidth, ActualBackgroundHeight);
-	UE_LOG(LogTemp, Warning, TEXT("Background center location is (%f, %f, %f)"), ActualBackGroundCenter.X, ActualBackGroundCenter.Y, ActualBackGroundCenter.Z);
+	// UE_LOG(LogTemp, Warning, TEXT("width - %f, height - %f"), ActualBackgroundWidth, ActualBackgroundHeight);
+	// UE_LOG(LogTemp, Warning, TEXT("Background center location is (%f, %f, %f)"), ActualBackGroundCenter.X, ActualBackGroundCenter.Y, ActualBackGroundCenter.Z);
 
 }
 
@@ -51,7 +51,7 @@ FVector2D UCharacterCameraComponent::GetGameResolution()
 {
 	FVector2D Result = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 
-	UE_LOG(LogTemp, Warning, TEXT("Resolution is %fx%f"), Result.X, Result.Y);
+	// UE_LOG(LogTemp, Warning, TEXT("Resolution is %fx%f"), Result.X, Result.Y);
 	return Result;
 }
 
@@ -109,7 +109,7 @@ void UCharacterCameraComponent::MoveTo(FVector TargetPosition) {
 	float ShowingHeight = abs(CurrentShowingPlaneRectangle.Highest - CurrentShowingPlaneRectangle.Lowest);
 
 	/*UE_LOG(LogTemp, Warning, TEXT("background is %f %f"), BackgroundWidth, BackgroundHeight);*/
-	UE_LOG(LogTemp, Warning, TEXT("Showing is %f %f"), ShowingWidth, ShowingHeight);
+	// UE_LOG(LogTemp, Warning, TEXT("Showing is %f %f"), ShowingWidth, ShowingHeight);
 	// по оси X(горизонталь)
 	if (BackgroundWidth <= ShowingWidth) {
 		// Если по горизонтали размер задника таков, что может поместиться в камеру с запасом

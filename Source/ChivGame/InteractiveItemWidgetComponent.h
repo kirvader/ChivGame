@@ -14,21 +14,12 @@ class CHIVGAME_API UInteractiveItemWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
 
-private:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
-		int32 x = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
-		int32 y = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
-		int32 z = 100;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WidgetRelativeLocation", meta = (AllowPrivateAccess = "true"))
+		FVector WidgetRelativeLocation = FVector(0, 0, 100);
 
 	UInteractiveItemWidgetComponent();
 
-	void InitWidget();
 
-	UFUNCTION(BlueprintCallable)
-	FVector GetRelativeVector();
 };

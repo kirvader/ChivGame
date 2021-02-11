@@ -17,6 +17,11 @@ class CHIVGAME_API APickupableItem : public ABaseInteractable
 {
 	GENERATED_BODY()
 	
+
+protected:
+	
+	virtual void BeginPlay() override;
+
 public:
 	// Sets default values for this actor's properties
 	APickupableItem();
