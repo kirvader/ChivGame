@@ -9,10 +9,8 @@
 #include "Sound/SoundCue.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "Item.h"
 #include "InventoryComponent.h"
 #include "BaseInteractiveThing.h"
-#include "InteractiveItemWidgetComponent.h"
 #include "CharacterCameraComponent.h"
 #include "InteractableItem.h"
 #include "BaseInteractable.h"
@@ -78,6 +76,7 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("SwitchItem", IE_Pressed, this, &AMainCharacterPawn::SwitchItem);
 
+	PlayerInputComponent->BindAction("OpenPossibleActions", IE_Pressed, this, &AMainCharacterPawn::CallItemPossibleActions);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnDefaultAction);
 	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
@@ -169,5 +168,12 @@ bool AMainCharacterPawn::NeedZoom()
 	if (Camera->CameraPrototypeID == 2) return Result;
 	if (Camera->CameraPrototypeID == 3) return !Result;
 	return false;
+}
+
+void AMainCharacterPawn::CallItemPossibleActions()
+{
+	if (CurrentInteractableActor) {
+		CurrentInteractableActor->TogglePossibleAcions();
+	}
 }
 

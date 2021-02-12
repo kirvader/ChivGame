@@ -3,6 +3,7 @@
 
 #include "InteractableItemsInfoWidgetComp.h"
 #include "InteractableItemsInfoWidget.h"
+#include "Components/ShapeComponent.h"
 #include "BaseInteractable.h"
 
 
@@ -29,7 +30,12 @@ void UInteractableItemsInfoWidgetComp::BeginPlay()
         }
     }
 
-    SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+    ABaseInteractable* CurrentOwner = Cast<ABaseInteractable>(GetOwner());
+
+    if (CurrentOwner) {
+        FVector Scale = CurrentOwner->TriggerShape->GetComponentScale();
+        SetRelativeLocation(FVector(Scale.X * CurrentOwner->TriggerExtent.X / 2 + 50, 10.f, Scale.Z * CurrentOwner->TriggerExtent.Z / 2 + 50));
+    }
     SetWorldRotation(FRotator(0.f, 90.f, 0.f));
 }
 
@@ -41,10 +47,27 @@ void UInteractableItemsInfoWidgetComp::ShowInfo()
         InfoWidget->ShowInfo(CurrentOwner->ItemDisplayName);
 }
 
+void UInteractableItemsInfoWidgetComp::ShowPossibleActions()
+{
+    if (InfoWidget)
+        InfoWidget->ShowPossibleActions();
+}
+
  void UInteractableItemsInfoWidgetComp::HideInfo()
 {
-     if (InfoWidget)
+     if (InfoWidget) 
         InfoWidget->HideInfo();
 }
+
+ void UInteractableItemsInfoWidgetComp::HidePossibleActions()
+ {
+     if (InfoWidget)
+         InfoWidget->HidePossibleActions();
+ }
+
+ bool UInteractableItemsInfoWidgetComp::ActionsAreHidden()
+ {
+     return InfoWidget->ActionsAreHidden();
+ }
 
 

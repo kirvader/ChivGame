@@ -4,21 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
-#include "InteractableItemsInfoWidget.h"
-#include "InteractableItemsInfoWidgetComp.generated.h"
-
+#include "InteractableItemsContextMenuComp.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CHIVGAME_API UInteractableItemsInfoWidgetComp : public UWidgetComponent
+class CHIVGAME_API UInteractableItemsContextMenuComp : public UWidgetComponent
 {
 	GENERATED_BODY()
-	
 
 public:
-	UInteractableItemsInfoWidgetComp();
+	/*UInteractableItemsContextMenuComp();
 
 	FString ItemName = "Name";
 
@@ -28,13 +25,10 @@ public:
 	virtual void BeginPlay() override;
 
 	void ShowInfo();
-	void ShowPossibleActions();
-	void HideInfo();
-	void HidePossibleActions();
 
-	bool ActionsAreHidden();
-	
+	void HideInfo();*/
 
 private:
-	UInteractableItemsInfoWidget* InfoWidget;
+	/*UInteractableItemsContextMenuComp* InfoWidget;*/
+	
 };

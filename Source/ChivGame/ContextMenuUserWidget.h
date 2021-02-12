@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item.h"
-#include "DefaultEmptyItem.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "ContextMenuUserWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CHIVGAME_API UDefaultEmptyItem : public UItem
+class CHIVGAME_API UContextMenuUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

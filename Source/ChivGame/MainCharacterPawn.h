@@ -49,6 +49,8 @@ private:
 	// Функция отвечающая на вопрос "нужен ли зум?"
 	bool NeedZoom();
 
+	void CallItemPossibleActions();
+
 	// Скорость движения персонажа по вертикали
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeedUpDown = 500.0f;
@@ -61,10 +63,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float PlaneAngle = 5.f;
 
-
-	// Переменная отвечающая за тип текущего интерактивного объекта, а именно ссылка на него
-	// Используется для фокусировки камеры на соответствующем объекте
-	AActor *CurrentInteractiveActor = nullptr;
 
 	// Угол наклона плоскости по которой ходит игрок, переведенный в радианы
 	float RadiansPlaneAngle = 5.f;
@@ -89,7 +87,7 @@ public:
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 
-	ABaseInteractable* CurrentInteractableActor;
+	ABaseInteractable* CurrentInteractableActor = nullptr;
 
 	void SetInteractableActor(ABaseInteractable* ActorRef);
 

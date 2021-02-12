@@ -5,10 +5,7 @@
 #include "BaseInteractable.h"
 #include <Paper2D/Classes/PaperSpriteComponent.h>
 #include "ChivGame/MainCharacterPawn.h"
-#include <ChivGame/Item.h>
 #include "Components/BoxComponent.h"
-#include "InteractiveItemWidgetComponent.h"
-#include "BaseInteractableInfo.h"
 #include "InteractableItemsInfoWidgetComp.h"
 
 // Sets default values
@@ -75,6 +72,8 @@ void ABaseInteractable::OnTriggerOverlapBegin
 
 		//ItemSprite->SetMaterial(0, ShimmeryMaterial);
 		//Widget->SetVisibility(true);
+
+		InfoWidget->ShowInfo();
 		
 
 		CastedActor->SetInteractableActor(this);
@@ -107,6 +106,8 @@ void ABaseInteractable::OnTriggerOverlapEnd
 		// UE_LOG(LogTemp, Warning,
 		// 	TEXT("on trigger overlap end"));
 
+		InfoWidget->HideInfo();
+
 		//Widget->SetVisibility(false);
 		//CastedActor->SetNormalFOV();
 		
@@ -127,12 +128,18 @@ void ABaseInteractable::DefaultAction(AMainCharacterPawn* ActingPlayer)
 {
 }
 
+void ABaseInteractable::TogglePossibleAcions()
+{
+	if (InfoWidget->ActionsAreHidden()) InfoWidget->ShowPossibleActions();
+	else InfoWidget->HidePossibleActions();
+}
+
 
 // Called when the game starts or when spawned
 void ABaseInteractable::BeginPlay()
 {
 	Super::BeginPlay();
 	BindTriggerCallbacksToTriggerShape();
-	InfoWidget->ShowInfo();
+	InfoWidget->HideInfo();
 }
 

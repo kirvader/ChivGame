@@ -99,6 +99,8 @@ public:
 
 	virtual void DefaultAction(AMainCharacterPawn* ActingPlayer);
 
+	void TogglePossibleAcions();
+
 
 	DECLARE_EVENT(ASimpleTriggerVolume, FSimpleTriggerVolumeEvent)
 	FSimpleTriggerVolumeEvent TriggerOverlapBeginEvent;

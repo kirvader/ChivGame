@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Runtime/UMG/Public/Components/TextBlock.h"
+#include "Runtime/UMG/Public/Components/VerticalBox.h"
 #include "InteractableItemsInfoWidget.generated.h"
 
 /**
@@ -17,11 +19,19 @@ public:
 	UInteractableItemsInfoWidget(const FObjectInitializer& ObjectInitializer);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		class UTextBlock* ItemName;
+		UTextBlock* ItemName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UVerticalBox* PossibleActionsList;
 
 	void ShowInfo(FString Name);
 
+	void ShowPossibleActions();
+
+	void HidePossibleActions();
+
 	void HideInfo();
+
+	bool ActionsAreHidden();
 
 
 };
