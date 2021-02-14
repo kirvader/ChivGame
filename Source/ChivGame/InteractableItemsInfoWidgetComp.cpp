@@ -37,7 +37,7 @@ void UInteractableItemsInfoWidgetComp::BeginPlay()
         SetRelativeLocation(FVector(Scale.X * CurrentOwner->TriggerExtent.X / 2 + 50, 10.f, Scale.Z * CurrentOwner->TriggerExtent.Z / 2 + 50));
     }
     SetWorldRotation(FRotator(0.f, 90.f, 0.f));
-    SetWorldScale3D(FVector(1.f, 1.f, 1.f));
+    SetWorldScale3D(FVector(2.f, 2.f, 2.f));
 }
 
 void UInteractableItemsInfoWidgetComp::ShowInfo()
