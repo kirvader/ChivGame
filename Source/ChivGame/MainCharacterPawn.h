@@ -70,6 +70,14 @@ private:
 	// глобальный счетчик смещения персонажа (вроде как оптимизация)
 	FVector HeroMoveDirection;
 
+	void Consider();
+
+	void Speak();
+
+	void PickUpOrUse();
+	
+	void ApplyCurrent();
+
 
 public:
 	
@@ -113,6 +121,8 @@ public:
 	// Указатель на инвентарь игрока
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UInventoryComponent *Inventory;
+
+
 
 
 

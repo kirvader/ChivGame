@@ -33,6 +33,8 @@ public:
 	void HidePossibleActions();
 
 	bool ActionsAreHidden();
+
+	void SetGamePaused(bool bIsPaused);
 	
 
 private:

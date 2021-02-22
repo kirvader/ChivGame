@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ChivGame/InteractableItemsSimpleAction.h"
 #include "BaseInteractable.generated.h"
 
 class UInteractiveItemWidgetComponent;
@@ -46,7 +47,11 @@ public:
 
 	// Спрайт элемента в мире. nullptr если не нужен
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
-	UPaperSpriteComponent* ItemSprite = nullptr;
+		UPaperSpriteComponent* ItemSprite = nullptr;
+
+	// Спрайт элемента в мире. nullptr если не нужен
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+		TArray< TEnumAsByte<InteractableItemActionButton> > PossibleActions;
 
 	// область в которой объект поднимаем
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
@@ -98,8 +103,20 @@ public:
 		virtual void TriggerCallbackOff();
 
 	virtual void DefaultAction(AMainCharacterPawn* ActingPlayer);
+	
+	virtual void Consider(AMainCharacterPawn* ActingPlayer);
+
+	virtual void Speak(AMainCharacterPawn* ActingPlayer);
+
+	virtual void PickUp(AMainCharacterPawn* ActingPlayer);
+
+	virtual void Use(AMainCharacterPawn* ActingPlayer);
+
+	virtual void ApplyCurrent(AMainCharacterPawn* ActingPlayer);
+
 
 	void TogglePossibleAcions();
+
 
 
 	DECLARE_EVENT(ASimpleTriggerVolume, FSimpleTriggerVolumeEvent)

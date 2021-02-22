@@ -50,8 +50,19 @@ public:
 	APickupableItem* NextInInventory = nullptr;
 	APickupableItem* PrevInInventory = nullptr;
 
-	virtual void Use(AMainCharacterPawn* Character) PURE_VIRTUAL(UItem, );
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnUse(AMainCharacterPawn* Character);
+	
+	virtual void Consider(AMainCharacterPawn* ActingPlayer) override;
+
+	virtual void Speak(AMainCharacterPawn* ActingPlayer) override;
+
+	virtual void PickUp(AMainCharacterPawn* ActingPlayer) override;
+
+	virtual void Use(AMainCharacterPawn* ActingPlayer) override;
+
+	virtual void ApplyCurrent(AMainCharacterPawn* ActingPlayer) override;
+
+
 };
