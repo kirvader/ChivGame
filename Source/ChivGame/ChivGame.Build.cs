@@ -8,7 +8,9 @@ public class ChivGame : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "SpinePlugin" });
+
+		PublicIncludePaths.AddRange(new string[] { "SpinePlugin/Public", "SpinePlugin/Classes" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

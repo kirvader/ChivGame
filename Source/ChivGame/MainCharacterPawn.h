@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include <string>
 #include "MainCharacterPawn.generated.h"
 
 class UPaperFlipbookComponent;
@@ -17,6 +18,9 @@ class USceneComponent;
 class UPaperSprite;
 class USoundCue;
 class UItem;
+class USpineSkeletonAnimationComponent;
+class USpineSkeletonRendererComponent;
+class UTrackEntry;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -69,7 +73,9 @@ private:
 
 	// глобальный счетчик смещения персонажа (вроде как оптимизация)
 	FVector HeroMoveDirection;
-
+	
+	// Текущая проигрываемая анимация
+	std::string CurrentAnimation;
 
 public:
 	
@@ -82,8 +88,8 @@ public:
 
 	// Нужно ли слышать звук шагов в данный момент
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	bool PlayerIsMoving;
-	
+	bool PlayerIsMoving = true;
+
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 
@@ -101,7 +107,7 @@ public:
 
 	// Вызывается при попытке подобрать элемент с земли
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-		void UpdateActiveItem();
+	void UpdateActiveItem();
 
 
 	// Текущее хп героя
@@ -115,6 +121,11 @@ public:
 	UInventoryComponent *Inventory;
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	USpineSkeletonAnimationComponent *AnimationComponent = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	USpineSkeletonRendererComponent *SkeletonRenderer = nullptr;
 
 protected:
 	// Called when the game starts or when spawned

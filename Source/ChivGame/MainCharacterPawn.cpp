@@ -15,8 +15,8 @@
 #include "InteractableItem.h"
 #include "BaseInteractable.h"
 #include <algorithm>
-
-
+#include "SpineSkeletonAnimationComponent.h"
+#include "SpineSkeletonRendererComponent.h"
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -36,6 +36,10 @@ AMainCharacterPawn::AMainCharacterPawn()
 
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
+	AnimationComponent = CreateDefaultSubobject<USpineSkeletonAnimationComponent>(TEXT("AnimationComponent"));
+	
+	SkeletonRenderer = CreateDefaultSubobject<USpineSkeletonRendererComponent>(TEXT("SkeletonRenderer"));
+	SkeletonRenderer->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -63,9 +67,32 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateHeroIsMoving();
+	
+
+	if (PlayerIsMoving) {
+		if (CurrentAnimation != "walk") {
+			CurrentAnimation = "walk";
+			AnimationComponent->ClearTracks();
+			AnimationComponent->SetAnimation(0, FString(TEXT("walk")), true);
+		}
+	}
+	else {
+		if (CurrentAnimation != "animation") {
+			CurrentAnimation = "animation";
+			AnimationComponent->ClearTracks();
+			AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
+		}
+	}
+
+	
+	/*if (entry) {
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString(entry->getAnimation()->getName().buffer()));
+	}*/
+
 	MoveHero();
 	Camera->MoveTo(HeroSprite->GetComponentLocation());
 	Camera->UpdateZoom();
+
 	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
 
@@ -122,6 +149,13 @@ void AMainCharacterPawn::UpdateActiveItem_Implementation()
 
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
+	if (Value > 0) {
+		AnimationComponent->SetScaleX(1);
+	}
+	else if (Value < 0) {
+		AnimationComponent->SetScaleX(-1);
+	}
+
     HeroMoveDirection = FVector(
 		Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 
 		HeroMoveDirection.Y, 
@@ -132,7 +166,7 @@ void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value)
 
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
-    HeroMoveDirection = FVector(
+	HeroMoveDirection = FVector(
 		HeroMoveDirection.X, 
 		-Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), 
 		Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle)
@@ -142,14 +176,15 @@ void AMainCharacterPawn::CalculateMoveUpDownInput(float Value)
 void AMainCharacterPawn::MoveHero() {
 	Camera->SetFOVStatus(NeedZoom() ? CameraFOV_Zoomed : CameraFOV_Normal);
 	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
-	
+	SkeletonRenderer->AddWorldOffset(HeroMoveDirection, true);
+
 	HeroMoveDirection = FVector(0, 0, 0);
 }
 
 void AMainCharacterPawn::UpdateHeroIsMoving() 
 {
 	PlayerIsMoving = HeroMoveDirection.Size() > 0.1;
-	// FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
+	//FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
 }
