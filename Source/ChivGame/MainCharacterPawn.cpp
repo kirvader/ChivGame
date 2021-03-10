@@ -17,6 +17,7 @@
 #include <algorithm>
 #include "SpineSkeletonAnimationComponent.h"
 #include "SpineSkeletonRendererComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -28,9 +29,6 @@ AMainCharacterPawn::AMainCharacterPawn()
 	RootComponent = HeroStaticMesh;
 	HeroStaticMesh->SetSimulatePhysics(true);
 
-	HeroSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HeroSprite"));
-	HeroSprite->SetupAttachment(RootComponent);
-
 	Camera = CreateDefaultSubobject<UCharacterCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
@@ -40,6 +38,9 @@ AMainCharacterPawn::AMainCharacterPawn()
 	
 	SkeletonRenderer = CreateDefaultSubobject<USpineSkeletonRendererComponent>(TEXT("SkeletonRenderer"));
 	SkeletonRenderer->SetupAttachment(RootComponent);
+
+	HeroCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Hero Collision"));
+	HeroCollision->SetupAttachment(SkeletonRenderer);
 }
 
 // Called when the game starts or when spawned
@@ -70,10 +71,10 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 	
 
 	if (PlayerIsMoving) {
-		if (CurrentAnimation != "walk") {
-			CurrentAnimation = "walk";
+		if (CurrentAnimation != "animation") {
+			CurrentAnimation = "animation";
 			AnimationComponent->ClearTracks();
-			AnimationComponent->SetAnimation(0, FString(TEXT("walk")), true);
+			AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
 		}
 	}
 	else {
@@ -90,7 +91,10 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 	}*/
 
 	MoveHero();
-	Camera->MoveTo(HeroSprite->GetComponentLocation());
+	UE_LOG(LogTemp, Error, TEXT("Current hero location %f %f %f"), SkeletonRenderer->GetComponentLocation().X, SkeletonRenderer->GetComponentLocation().Y, SkeletonRenderer->GetComponentLocation().Z);
+	Camera->MoveTo(SkeletonRenderer->GetComponentLocation());
+	UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
+	
 	Camera->UpdateZoom();
 
 	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
@@ -175,7 +179,6 @@ void AMainCharacterPawn::CalculateMoveUpDownInput(float Value)
 
 void AMainCharacterPawn::MoveHero() {
 	Camera->SetFOVStatus(NeedZoom() ? CameraFOV_Zoomed : CameraFOV_Normal);
-	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
 	SkeletonRenderer->AddWorldOffset(HeroMoveDirection, true);
 
 	HeroMoveDirection = FVector(0, 0, 0);
@@ -196,8 +199,8 @@ bool AMainCharacterPawn::NeedZoom()
 	FRectangle BackgroundRectangle = Camera->ActualBackgroundRectangle;
 
 	
-	bool Result = ((HeroSprite->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
-		(HeroSprite->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
+	bool Result = ((SkeletonRenderer->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
+		(SkeletonRenderer->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
 	
 	
 	if (Camera->CameraPrototypeID == 2) return Result;

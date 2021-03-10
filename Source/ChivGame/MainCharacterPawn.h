@@ -7,7 +7,6 @@
 #include <string>
 #include "MainCharacterPawn.generated.h"
 
-class UPaperFlipbookComponent;
 class UCameraComponent;
 class ABaseInteractable;
 class ABaseInteractable;
@@ -21,6 +20,7 @@ class UItem;
 class USpineSkeletonAnimationComponent;
 class USpineSkeletonRendererComponent;
 class UTrackEntry;
+class UBoxComponent;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -28,9 +28,15 @@ class CHIVGAME_API AMainCharacterPawn : public APawn
 	GENERATED_BODY()
 private:
 	
-	// Моделька персонажа
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UPaperFlipbookComponent* HeroSprite;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	USpineSkeletonAnimationComponent *AnimationComponent = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+		USpineSkeletonRendererComponent* SkeletonRenderer = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+		UBoxComponent* HeroCollision = nullptr;
+	
 	// Камера персонажа
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCharacterCameraComponent* Camera;
@@ -121,11 +127,6 @@ public:
 	UInventoryComponent *Inventory;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-	USpineSkeletonAnimationComponent *AnimationComponent = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-	USpineSkeletonRendererComponent *SkeletonRenderer = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
