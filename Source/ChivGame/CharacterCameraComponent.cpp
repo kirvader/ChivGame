@@ -129,10 +129,6 @@ void UCharacterCameraComponent::MoveTo(FVector TargetPosition) {
 		TargetPosition.Z = Max(TargetPosition.Z, ActualBackgroundRectangle.Lowest + ShowingHeight / 2);
 		TargetPosition.Z = Min(TargetPosition.Z, ActualBackgroundRectangle.Highest - ShowingHeight / 2);
 	}
-	UE_LOG(LogTemp, Error, TEXT("In camera component"));
-	UE_LOG(LogTemp, Warning, TEXT("Camera location should be %f %f %f"), TargetPosition.X, TargetPosition.Y, TargetPosition.Z);
-	UE_LOG(LogTemp, Warning, TEXT("Camera location will change by %f %f %f"), GetAxisOffset(TargetPosition).X, GetAxisOffset(TargetPosition).Y, GetAxisOffset(TargetPosition).Z);
-
 	AddWorldOffset(GetAxisOffset(TargetPosition), true);
 	
 

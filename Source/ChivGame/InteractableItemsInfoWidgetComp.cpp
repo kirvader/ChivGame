@@ -21,12 +21,17 @@ void UInteractableItemsInfoWidgetComp::BeginPlay()
     if (InfoWidgetClass)
     {
         InfoWidget = CreateWidget<UInteractableItemsInfoWidget>(GetWorld(), InfoWidgetClass);
-        /** Make sure widget was created */
-        if (InfoWidget)
-        {
-            /** Add it to the viewport */
-            // InfoWidget->AddToPlayerScreen();
-            SetWidget(InfoWidget);
+        ABaseInteractable* CurrentOwner = Cast<ABaseInteractable>(GetOwner());
+        if (CurrentOwner) {
+            /** Make sure widget was created */
+            if (InfoWidget)
+            {
+                UE_LOG(LogTemp, Error, TEXT("in %s build possible actions"), *CurrentOwner->ItemDisplayName);
+                InfoWidget->BuildPossibleActions(CurrentOwner);
+                /** Add it to the viewport */
+                // InfoWidget->AddToPlayerScreen();
+                SetWidget(InfoWidget);
+            }
         }
     }
 
@@ -43,15 +48,16 @@ void UInteractableItemsInfoWidgetComp::BeginPlay()
 void UInteractableItemsInfoWidgetComp::ShowInfo()
 {
     ABaseInteractable* CurrentOwner = Cast<ABaseInteractable>(GetOwner());
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentOwner->ItemDisplayName);
+    UE_LOG(LogTemp, Warning, TEXT("name - %s"), *CurrentOwner->ItemDisplayName);
     if (InfoWidget)
         InfoWidget->ShowInfo(CurrentOwner->ItemDisplayName);
 }
 
 void UInteractableItemsInfoWidgetComp::ShowPossibleActions()
 {
-    if (InfoWidget)
+    if (InfoWidget) {
         InfoWidget->ShowPossibleActions();
+    }
 }
 
  void UInteractableItemsInfoWidgetComp::HideInfo()
@@ -62,13 +68,16 @@ void UInteractableItemsInfoWidgetComp::ShowPossibleActions()
 
  void UInteractableItemsInfoWidgetComp::HidePossibleActions()
  {
-     if (InfoWidget)
+     if (InfoWidget) {
          InfoWidget->HidePossibleActions();
+     }
  }
 
  bool UInteractableItemsInfoWidgetComp::ActionsAreHidden()
  {
      return InfoWidget->ActionsAreHidden();
  }
+
+
 
 

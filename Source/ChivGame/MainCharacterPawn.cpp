@@ -18,6 +18,7 @@
 #include "SpineSkeletonAnimationComponent.h"
 #include "SpineSkeletonRendererComponent.h"
 #include "Components/BoxComponent.h"
+#include "InteractableItemsInfoWidgetComp.h"
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -47,6 +48,7 @@ AMainCharacterPawn::AMainCharacterPawn()
 void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
 
 	Camera->UpdateBackgroundSpriteRange();
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
@@ -70,7 +72,7 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 	UpdateHeroIsMoving();
 	
 
-	if (PlayerIsMoving) {
+	/*if (PlayerIsMoving) {
 		if (CurrentAnimation != "animation") {
 			CurrentAnimation = "animation";
 			AnimationComponent->ClearTracks();
@@ -83,7 +85,7 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 			AnimationComponent->ClearTracks();
 			AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
 		}
-	}
+	}*/
 
 	
 	/*if (entry) {
@@ -91,9 +93,7 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 	}*/
 
 	MoveHero();
-	UE_LOG(LogTemp, Error, TEXT("Current hero location %f %f %f"), SkeletonRenderer->GetComponentLocation().X, SkeletonRenderer->GetComponentLocation().Y, SkeletonRenderer->GetComponentLocation().Z);
 	Camera->MoveTo(SkeletonRenderer->GetComponentLocation());
-	UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 	
 	Camera->UpdateZoom();
 
@@ -153,6 +153,11 @@ void AMainCharacterPawn::UpdateActiveItem_Implementation()
 
 void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value) 
 {
+	if (CurrentInteractableActor) {
+		if (!CurrentInteractableActor->InfoWidget->ActionsAreHidden()) {
+			return;
+		}
+	}
 	if (Value > 0) {
 		AnimationComponent->SetScaleX(1);
 	}
@@ -170,6 +175,11 @@ void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value)
 
 void AMainCharacterPawn::CalculateMoveUpDownInput(float Value) 
 {
+	if (CurrentInteractableActor) {
+		if (!CurrentInteractableActor->InfoWidget->ActionsAreHidden()) {
+			return;
+		}
+	}
 	HeroMoveDirection = FVector(
 		HeroMoveDirection.X, 
 		-Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), 
@@ -210,8 +220,13 @@ bool AMainCharacterPawn::NeedZoom()
 
 void AMainCharacterPawn::CallItemPossibleActions()
 {
+	
 	if (CurrentInteractableActor) {
+		UE_LOG(LogTemp, Warning, TEXT("toggling menu from %s"), *(CurrentInteractableActor->ItemDisplayName));
 		CurrentInteractableActor->TogglePossibleAcions();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Current Interactable Actor = null"));
 	}
 }
 

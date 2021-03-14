@@ -124,9 +124,17 @@ void ABaseInteractable::TriggerCallbackOff()
 	// 	TEXT("SimpleTriggerVolume::TriggerCallbackOff(). To add functionality, override this function."));
 }
 
-void ABaseInteractable::DefaultAction(AMainCharacterPawn* ActingPlayer)
-{
-}
+void ABaseInteractable::DefaultAction(AMainCharacterPawn* ActingPlayer) {}
+
+void ABaseInteractable::Consider(AMainCharacterPawn* ActingPlayer) {}
+
+void ABaseInteractable::Speak(AMainCharacterPawn* ActingPlayer) {}
+
+void ABaseInteractable::PickUp(AMainCharacterPawn* ActingPlayer) {}
+
+void ABaseInteractable::Use(AMainCharacterPawn* ActingPlayer) {}
+
+void ABaseInteractable::ApplyCurrent(AMainCharacterPawn* ActingPlayer) {}
 
 void ABaseInteractable::TogglePossibleAcions()
 {
