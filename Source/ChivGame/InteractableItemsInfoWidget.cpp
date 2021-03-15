@@ -29,6 +29,20 @@ void UInteractableItemsInfoWidget::BuildPossibleActions(ABaseInteractable* Curre
 	}
 }
 
+void UInteractableItemsInfoWidget::BuildPossibleActions(ABaseInteractable* CurrentOwner) {
+	PossibleActionsList->ClearChildren();
+	if (CurrentOwner) {
+		for (auto action : CurrentOwner->PossibleActions) {
+			UInteractableItemsSimpleAction* ActionButton = CreateWidget<UInteractableItemsSimpleAction>(GetWorld(), SimpleActionWidgetClass);
+			if (ActionButton) {
+				AMainCharacterPawn* CurrentPlayer = Cast<AMainCharacterPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+				ActionButton->ConfigureAction(action, CurrentPlayer, CurrentOwner);
+				PossibleActionsList->AddChildToWrapBox(ActionButton);
+			}
+		}
+	}
+}
+
 void UInteractableItemsInfoWidget::ShowInfo(FString Name)
 {
 	if (ItemName) {

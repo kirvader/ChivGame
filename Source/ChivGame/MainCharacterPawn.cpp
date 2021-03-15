@@ -14,11 +14,49 @@
 #include "CharacterCameraComponent.h"
 #include "InteractableItem.h"
 #include "BaseInteractable.h"
+#include "InteractableItemsInfoWidgetComp.h"
 #include <algorithm>
 #include "SpineSkeletonAnimationComponent.h"
 #include "SpineSkeletonRendererComponent.h"
 #include "Components/BoxComponent.h"
 #include "InteractableItemsInfoWidgetComp.h"
+
+
+
+void AMainCharacterPawn::Consider()
+{
+	if (!CurrentInteractableActor) return;
+	if (CurrentInteractableActor->InfoWidget->ActionsAreHidden()) return;
+	if (CurrentInteractableActor->PossibleActions.Contains(Button_Consider))
+		CurrentInteractableActor->Consider(this);
+}
+
+void AMainCharacterPawn::Speak()
+{
+	if (!CurrentInteractableActor) return;
+	if (CurrentInteractableActor->InfoWidget->ActionsAreHidden()) return;
+	if (CurrentInteractableActor->PossibleActions.Contains(Button_Speak))
+		CurrentInteractableActor->Speak(this);
+}
+
+void AMainCharacterPawn::PickUpOrUse()
+{
+	if (!CurrentInteractableActor) return;
+	if (CurrentInteractableActor->InfoWidget->ActionsAreHidden()) return;
+	if (CurrentInteractableActor->PossibleActions.Contains(Button_PickUp)) {
+		CurrentInteractableActor->PickUp(this); // need to decide pick up or use
+		UpdateActiveItem();
+	}
+}
+
+void AMainCharacterPawn::ApplyCurrent()
+{
+	if (!CurrentInteractableActor) return;
+	if (CurrentInteractableActor->InfoWidget->ActionsAreHidden()) return;
+	if (CurrentInteractableActor->PossibleActions.Contains(Button_ApplyCurrent))
+		CurrentInteractableActor->ApplyCurrent(this);
+}
+
 
 // Sets default values
 AMainCharacterPawn::AMainCharacterPawn()
@@ -112,6 +150,11 @@ void AMainCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacterPawn::OnDefaultAction);
 	PlayerInputComponent->BindAction("PickUpItem", IE_Pressed, this, &AMainCharacterPawn::OnPickUpItemCall);
 
+	PlayerInputComponent->BindAction("Consider", IE_Pressed, this, &AMainCharacterPawn::Consider);
+	PlayerInputComponent->BindAction("Speak", IE_Pressed, this, &AMainCharacterPawn::Speak);
+	PlayerInputComponent->BindAction("PickUpOrUse", IE_Pressed, this, &AMainCharacterPawn::PickUpOrUse);
+	PlayerInputComponent->BindAction("ApplyCurrent", IE_Pressed, this, &AMainCharacterPawn::ApplyCurrent);
+
     PlayerInputComponent->BindAxis("MoveUpAndDown", this, &AMainCharacterPawn::CalculateMoveUpDownInput);
     PlayerInputComponent->BindAxis("MoveLeftAndRight", this, &AMainCharacterPawn::CalculateMoveLeftRightInput);
 }
@@ -180,7 +223,7 @@ void AMainCharacterPawn::CalculateMoveUpDownInput(float Value)
 			return;
 		}
 	}
-	HeroMoveDirection = FVector(
+    HeroMoveDirection = FVector(
 		HeroMoveDirection.X, 
 		-Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * cos(RadiansPlaneAngle), 
 		Value * MoveSpeedUpDown * GetWorld()->DeltaTimeSeconds * sin(RadiansPlaneAngle)
@@ -229,4 +272,3 @@ void AMainCharacterPawn::CallItemPossibleActions()
 		UE_LOG(LogTemp, Error, TEXT("Current Interactable Actor = null"));
 	}
 }
-
