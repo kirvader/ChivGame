@@ -16,6 +16,10 @@
 #include "BaseInteractable.h"
 #include "InteractableItemsInfoWidgetComp.h"
 #include <algorithm>
+#include "SpineSkeletonAnimationComponent.h"
+#include "SpineSkeletonRendererComponent.h"
+#include "Components/BoxComponent.h"
+#include "InteractableItemsInfoWidgetComp.h"
 
 
 
@@ -64,20 +68,25 @@ AMainCharacterPawn::AMainCharacterPawn()
 	RootComponent = HeroStaticMesh;
 	HeroStaticMesh->SetSimulatePhysics(true);
 
-	HeroSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HeroSprite"));
-	HeroSprite->SetupAttachment(RootComponent);
-
 	Camera = CreateDefaultSubobject<UCharacterCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
 
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
+	AnimationComponent = CreateDefaultSubobject<USpineSkeletonAnimationComponent>(TEXT("AnimationComponent"));
+	
+	SkeletonRenderer = CreateDefaultSubobject<USpineSkeletonRendererComponent>(TEXT("SkeletonRenderer"));
+	SkeletonRenderer->SetupAttachment(RootComponent);
+
+	HeroCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Hero Collision"));
+	HeroCollision->SetupAttachment(SkeletonRenderer);
 }
 
 // Called when the game starts or when spawned
 void AMainCharacterPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
 
 	Camera->UpdateBackgroundSpriteRange();
 	RadiansPlaneAngle = (90 - PlaneAngle) * PI / 180.f;
@@ -99,9 +108,33 @@ void AMainCharacterPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateHeroIsMoving();
+	
+
+	/*if (PlayerIsMoving) {
+		if (CurrentAnimation != "animation") {
+			CurrentAnimation = "animation";
+			AnimationComponent->ClearTracks();
+			AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
+		}
+	}
+	else {
+		if (CurrentAnimation != "animation") {
+			CurrentAnimation = "animation";
+			AnimationComponent->ClearTracks();
+			AnimationComponent->SetAnimation(0, FString(TEXT("animation")), true);
+		}
+	}*/
+
+	
+	/*if (entry) {
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString(entry->getAnimation()->getName().buffer()));
+	}*/
+
 	MoveHero();
-	Camera->MoveTo(HeroSprite->GetComponentLocation());
+	Camera->MoveTo(SkeletonRenderer->GetComponentLocation());
+	
 	Camera->UpdateZoom();
+
 	// UE_LOG(LogTemp, Warning, TEXT("Camera location %f %f %f"), Camera->GetComponentLocation().X, Camera->GetComponentLocation().Y, Camera->GetComponentLocation().Z);
 }
 
@@ -168,6 +201,13 @@ void AMainCharacterPawn::CalculateMoveLeftRightInput(float Value)
 			return;
 		}
 	}
+	if (Value > 0) {
+		AnimationComponent->SetScaleX(1);
+	}
+	else if (Value < 0) {
+		AnimationComponent->SetScaleX(-1);
+	}
+
     HeroMoveDirection = FVector(
 		Value * MoveSpeedLeftRight * GetWorld()->DeltaTimeSeconds, 
 		HeroMoveDirection.Y, 
@@ -192,15 +232,15 @@ void AMainCharacterPawn::CalculateMoveUpDownInput(float Value)
 
 void AMainCharacterPawn::MoveHero() {
 	Camera->SetFOVStatus(NeedZoom() ? CameraFOV_Zoomed : CameraFOV_Normal);
-	HeroSprite->AddWorldOffset(HeroMoveDirection, true);
-	
+	SkeletonRenderer->AddWorldOffset(HeroMoveDirection, true);
+
 	HeroMoveDirection = FVector(0, 0, 0);
 }
 
 void AMainCharacterPawn::UpdateHeroIsMoving() 
 {
 	PlayerIsMoving = HeroMoveDirection.Size() > 0.1;
-	// FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
+	//FString str = PlayerIsMoving ? TEXT("true") : TEXT("false");
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("player is moving: %s"), *str));
 }
@@ -212,8 +252,8 @@ bool AMainCharacterPawn::NeedZoom()
 	FRectangle BackgroundRectangle = Camera->ActualBackgroundRectangle;
 
 	
-	bool Result = ((HeroSprite->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
-		(HeroSprite->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
+	bool Result = ((SkeletonRenderer->GetComponentLocation().Z <= (3 * BackgroundRectangle.Highest + BackgroundRectangle.Lowest) / 4) &&
+		(SkeletonRenderer->GetComponentLocation().Z >= (BackgroundRectangle.Highest + 3 * BackgroundRectangle.Lowest) / 4));
 	
 	
 	if (Camera->CameraPrototypeID == 2) return Result;
@@ -223,8 +263,12 @@ bool AMainCharacterPawn::NeedZoom()
 
 void AMainCharacterPawn::CallItemPossibleActions()
 {
+	
 	if (CurrentInteractableActor) {
-		
+		UE_LOG(LogTemp, Warning, TEXT("toggling menu from %s"), *(CurrentInteractableActor->ItemDisplayName));
 		CurrentInteractableActor->TogglePossibleAcions();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Current Interactable Actor = null"));
 	}
 }

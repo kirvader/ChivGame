@@ -15,6 +15,23 @@ UInteractableItemsInfoWidget::UInteractableItemsInfoWidget(const FObjectInitiali
 void UInteractableItemsInfoWidget::BuildPossibleActions(ABaseInteractable* CurrentOwner) {
 	PossibleActionsList->ClearChildren();
 	if (CurrentOwner) {
+		AMainCharacterPawn* CurrentPlayer = Cast<AMainCharacterPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		UE_LOG(LogTemp, Warning, TEXT("number of current item possible actions = %d"), CurrentOwner->PossibleActions.Num());
+		for (auto action : CurrentOwner->PossibleActions) {
+			UInteractableItemsSimpleAction* ActionButton = CreateWidget<UInteractableItemsSimpleAction>(GetWorld(), SimpleActionWidgetClass);
+			if (ActionButton) {
+				
+				ActionButton->ConfigureAction(action, CurrentPlayer, CurrentOwner);
+				ActionButton->AddToViewport();
+				PossibleActionsList->AddChildToWrapBox(ActionButton);
+			}
+		}
+	}
+}
+
+void UInteractableItemsInfoWidget::BuildPossibleActions(ABaseInteractable* CurrentOwner) {
+	PossibleActionsList->ClearChildren();
+	if (CurrentOwner) {
 		for (auto action : CurrentOwner->PossibleActions) {
 			UInteractableItemsSimpleAction* ActionButton = CreateWidget<UInteractableItemsSimpleAction>(GetWorld(), SimpleActionWidgetClass);
 			if (ActionButton) {

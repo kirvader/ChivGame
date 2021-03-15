@@ -26,6 +26,7 @@ void UInteractableItemsInfoWidgetComp::BeginPlay()
             /** Make sure widget was created */
             if (InfoWidget)
             {
+                UE_LOG(LogTemp, Error, TEXT("in %s build possible actions"), *CurrentOwner->ItemDisplayName);
                 InfoWidget->BuildPossibleActions(CurrentOwner);
                 /** Add it to the viewport */
                 // InfoWidget->AddToPlayerScreen();
@@ -47,7 +48,7 @@ void UInteractableItemsInfoWidgetComp::BeginPlay()
 void UInteractableItemsInfoWidgetComp::ShowInfo()
 {
     ABaseInteractable* CurrentOwner = Cast<ABaseInteractable>(GetOwner());
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentOwner->ItemDisplayName);
+    UE_LOG(LogTemp, Warning, TEXT("name - %s"), *CurrentOwner->ItemDisplayName);
     if (InfoWidget)
         InfoWidget->ShowInfo(CurrentOwner->ItemDisplayName);
 }

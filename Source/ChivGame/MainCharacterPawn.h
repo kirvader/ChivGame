@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include <string>
 #include "MainCharacterPawn.generated.h"
 
-class UPaperFlipbookComponent;
 class UCameraComponent;
 class ABaseInteractable;
 class ABaseInteractable;
@@ -17,6 +17,10 @@ class USceneComponent;
 class UPaperSprite;
 class USoundCue;
 class UItem;
+class USpineSkeletonAnimationComponent;
+class USpineSkeletonRendererComponent;
+class UTrackEntry;
+class UBoxComponent;
 
 UCLASS()
 class CHIVGAME_API AMainCharacterPawn : public APawn
@@ -24,9 +28,15 @@ class CHIVGAME_API AMainCharacterPawn : public APawn
 	GENERATED_BODY()
 private:
 	
-	// Моделька персонажа
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UPaperFlipbookComponent* HeroSprite;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	USpineSkeletonAnimationComponent *AnimationComponent = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+		USpineSkeletonRendererComponent* SkeletonRenderer = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+		UBoxComponent* HeroCollision = nullptr;
+	
 	// Камера персонажа
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCharacterCameraComponent* Camera;
@@ -79,6 +89,10 @@ private:
 	void ApplyCurrent();
 
 
+	
+	// Текущая проигрываемая анимация
+	std::string CurrentAnimation;
+
 public:
 	
 	// Sets default values for this pawn's properties
@@ -90,8 +104,8 @@ public:
 
 	// Нужно ли слышать звук шагов в данный момент
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	bool PlayerIsMoving;
-	
+	bool PlayerIsMoving = true;
+
 	// Статичный объект на земле с которым можно взаимодействовать
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 
@@ -109,7 +123,7 @@ public:
 
 	// Вызывается при попытке подобрать элемент с земли
 	UFUNCTION(BlueprintCallable, BluePrintNativeEvent)
-		void UpdateActiveItem();
+	void UpdateActiveItem();
 
 
 	// Текущее хп героя
